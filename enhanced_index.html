@@ -1,0 +1,3242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Dashboard - Personal & Business Finance Management</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#fdf2f8',
+                            100: '#fce7f3',
+                            200: '#fbcfe8',
+                            300: '#f9a8d4',
+                            400: '#f472b6',
+                            500: '#ec4899',
+                            600: '#DF1783',
+                            700: '#be185d',
+                            800: '#9d174d',
+                            900: '#831843'
+                        },
+                        success: {
+                            600: '#059669',
+                            700: '#047857'
+                        },
+                        warning: {
+                            600: '#ea580c',
+                            700: '#c2410c'
+                        },
+                        danger: {
+                            600: '#dc2626',
+                            700: '#b91c1c'
+                        }
+                    }
+                }
+            },
+            darkMode: 'class'
+        }
+    </script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <!-- Chart.js for Financial Charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- EmailJS for Email Notifications -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    
+    
+    <style>
+    
+        .custom-image-widget {
+  position: fixed !important;
+  top: 70px !important;  /* Verify this value isn't too large */
+  margin: 0 !important;
+  padding: 0 !important;
+    right: 0px; /* Add spacing from the edge */
+        z-index: 999;
+}
+  
+    .custom-image {
+        width: 70px;
+        height: auto;
+       transition: transform 0.2s;
+    }
+    
+    
+      .custom-image-widget:hover .custom-image {
+        transform: scale(1.05); /* Slight zoom effect */
+    }  
+ 
+ 
+     .custom-image-widget:hover .tooltip {
+        visibility: visible;
+        opacity: 1;
+    }
+ 
+
+    
+        .sidebar-transition {
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        .card-hover {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .progress-bar {
+            transition: width 0.5s ease-in-out;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+        
+        .chart-container-large {
+            position: relative;
+            height: 400px;
+        }
+        
+        .tooltip {
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s, opacity 0.3s linear;
+        }
+        
+        .sidebar-menu-item:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+        }
+        
+        .floating-action-buttons {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .floating-button {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+        }
+        
+        .floating-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+        
+        /* Dark mode specific styles */
+        .dark .bg-white {
+            background-color: #1f2937;
+        }
+        
+        .dark .text-gray-900 {
+            color: #f9fafb;
+        }
+        
+        .dark .border-gray-200 {
+            border-color: #374151;
+        }
+        
+        /* Custom scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .floating-action-buttons {
+                bottom: 80px; /* Account for mobile navigation */
+            }
+        }
+        
+        /* Notion template styling */
+        .notion-template {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        
+        .notion-code {
+            background-color: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: #374151;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        
+        .dark .notion-code {
+            background-color: #374151;
+            border-color: #4b5563;
+            color: #f3f4f6;
+        }
+        
+        /* Transaction recurring options animation */
+        .recurring-options-enter {
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Date preview styling */
+        .date-preview {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 12px;
+            font-size: 14px;
+        }
+        
+        .date-preview-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .date-preview-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    
+    
+<div class="custom-image-widget">
+    <img src="https://i.postimg.cc/g2QCJFRj/Bebell-Banner-Logo.png" alt="Logo" class="custom-image cursor-pointer" onclick="window.open('https://bebellsolutions.com/', '_blank')">
+    <div class="tooltip absolute top-0 left-0 transform -translate-x-full -translate-y-2 bg-black text-white text-xs rounded py-1 px-2 pointer-events-none whitespace-nowrap">
+        Visit our website
+    </div>
+</div>
+    
+    
+    <!-- Mobile Navigation Bar -->
+    <nav class="md:hidden bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40">
+        <div class="flex items-center justify-between p-4">
+            <div class="flex items-center">
+                <button onclick="toggleMobileMenu()" class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+                <h1 class="ml-3 text-lg font-semibold text-gray-900 dark:text-white">Finance Dashboard</h1>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button onclick="toggleTheme()" class="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 rounded-lg">
+                    <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+                    <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
+                </button>
+                <div class="relative">
+                    <button onclick="toggleNotifications()" class="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 rounded-lg">
+                        <i data-lucide="bell" class="w-5 h-5"></i>
+                        <span id="mobile-notification-badge" class="notification-badge hidden">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+            <div class="p-4 space-y-3">
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="col-span-2">
+                        <a href="#dashboard" onclick="setActiveTab('dashboard'); toggleMobileMenu()" class="mobile-menu-item block p-3 rounded-lg bg-primary-50 dark:bg-primary-900 text-primary-600 dark:text-primary-400 font-medium">
+                            <i data-lucide="home" class="w-5 h-5 inline mr-2"></i>
+                            Dashboard
+                        </a>
+                    </div>
+                    <a href="#transactions" onclick="setActiveTab('transactions'); toggleMobileMenu()" class="mobile-menu-item block p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <i data-lucide="receipt" class="w-5 h-5 inline mr-2"></i>
+                        Transactions
+                    </a>
+                    <a href="#accounts" onclick="setActiveTab('accounts'); toggleMobileMenu()" class="mobile-menu-item block p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <i data-lucide="wallet" class="w-5 h-5 inline mr-2"></i>
+                        Accounts
+                    </a>
+                    <a href="#budgets" onclick="setActiveTab('budgets'); toggleMobileMenu()" class="mobile-menu-item block p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <i data-lucide="pie-chart" class="w-5 h-5 inline mr-2"></i>
+                        Budgets
+                    </a>
+                    <a href="#goals" onclick="setActiveTab('goals'); toggleMobileMenu()" class="mobile-menu-item block p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <i data-lucide="target" class="w-5 h-5 inline mr-2"></i>
+                        Goals
+                    </a>
+                    <a href="#reports" onclick="setActiveTab('reports'); toggleMobileMenu()" class="mobile-menu-item block p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <i data-lucide="bar-chart-3" class="w-5 h-5 inline mr-2"></i>
+                        Reports
+                    </a>
+                    <a href="#bills" onclick="setActiveTab('bills'); toggleMobileMenu()" class="mobile-menu-item block p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <i data-lucide="calendar" class="w-5 h-5 inline mr-2"></i>
+                        Bills
+                    </a>
+                    <a href="#settings" onclick="setActiveTab('settings'); toggleMobileMenu()" class="mobile-menu-item block p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <i data-lucide="settings" class="w-5 h-5 inline mr-2"></i>
+                        Settings
+                    </a>
+                </div>
+                
+                <!-- Quick Actions for Mobile -->
+                <div class="border-t border-gray-200 dark:border-gray-700 pt-3">
+                    <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">Quick Actions</h3>
+                    <div class="space-y-2">
+                        <div class="grid grid-cols-1 gap-2">
+                            <button onclick="openAddTransactionModal(); toggleMobileMenu()" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center">
+                                <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
+                                Add Transaction
+                            </button>
+                            <button onclick="openAddGoalModal(); toggleMobileMenu()" class="w-full border border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 text-gray-700 dark:text-gray-300 font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center">
+                                <i data-lucide="target" class="w-4 h-4 mr-2"></i>
+                                Add Goal
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Notion Template Button -->
+                    <div class="mt-3">
+                        <div class="grid grid-cols-1 gap-2">
+                            <button onclick="openNotionTemplateModal(); toggleMobileMenu()" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center">
+                                <i data-lucide="file-text" class="w-4 h-4 mr-2"></i>
+                                Notion Template
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="hidden md:flex md:flex-col w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 fixed md:relative h-full md:h-auto z-30 sidebar-transition">
+            <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center">
+                        <i data-lucide="dollar-sign" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <h1 class="ml-3 text-lg font-semibold text-gray-900 dark:text-white">Finance Dashboard</h1>
+                </div>
+                <button onclick="toggleMobileMenu()" class="md:hidden text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <nav class="flex-1 p-4">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="#dashboard" onclick="setActiveTab('dashboard')" class="sidebar-menu-item flex items-center p-3 rounded-lg bg-primary-50 dark:bg-primary-900 text-primary-600 dark:text-primary-400 font-medium group relative">
+                            <i data-lucide="home" class="w-5 h-5 mr-3"></i>
+                            Dashboard
+                            <div class="tooltip absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                                Overview of your finances
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#transactions" onclick="setActiveTab('transactions')" class="sidebar-menu-item flex items-center p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 group relative">
+                            <i data-lucide="receipt" class="w-5 h-5 mr-3"></i>
+                            Transactions
+                            <div class="tooltip absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                                View and manage transactions
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#accounts" onclick="setActiveTab('accounts')" class="sidebar-menu-item flex items-center p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 group relative">
+                            <i data-lucide="wallet" class="w-5 h-5 mr-3"></i>
+                            Accounts
+                            <div class="tooltip absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                                Manage your accounts
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#budgets" onclick="setActiveTab('budgets')" class="sidebar-menu-item flex items-center p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 group relative">
+                            <i data-lucide="pie-chart" class="w-5 h-5 mr-3"></i>
+                            Budgets
+                            <div class="tooltip absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                                Track budget performance
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#goals" onclick="setActiveTab('goals')" class="sidebar-menu-item flex items-center p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 group relative">
+                            <i data-lucide="target" class="w-5 h-5 mr-3"></i>
+                            Goals
+                            <div class="tooltip absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                                Set and track financial goals
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#reports" onclick="setActiveTab('reports')" class="sidebar-menu-item flex items-center p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 group relative">
+                            <i data-lucide="bar-chart-3" class="w-5 h-5 mr-3"></i>
+                            Reports
+                            <div class="tooltip absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                                Financial reports and analytics
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#bills" onclick="setActiveTab('bills')" class="sidebar-menu-item flex items-center p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 group relative">
+                            <i data-lucide="calendar" class="w-5 h-5 mr-3"></i>
+                            Bills & Calendar
+                            <div class="tooltip absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                                Bill reminders and calendar
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#settings" onclick="setActiveTab('settings')" class="sidebar-menu-item flex items-center p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 group relative">
+                            <i data-lucide="settings" class="w-5 h-5 mr-3"></i>
+                            Settings
+                            <div class="tooltip absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                                App settings and preferences
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+                
+                <!-- Quick Actions Sidebar -->
+                <div class="mt-8">
+                    <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">Quick Actions</h3>
+                    <div class="space-y-2">
+                        <button onclick="openAddTransactionModal()" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center">
+                            <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
+                            Add Transaction
+                        </button>
+                        <button onclick="openAddGoalModal()" class="w-full border border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 text-gray-700 dark:text-gray-300 font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center">
+                            <i data-lucide="target" class="w-4 h-4 mr-2"></i>
+                            Add Goal
+                        </button>
+                    </div>
+                    
+                    <!-- Notion Template Button -->
+                    <div class="mt-4">
+                        <div class="space-y-2">
+                            <button onclick="openNotionTemplateModal()" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center">
+                                <i data-lucide="file-text" class="w-4 h-4 mr-2"></i>
+                                Notion Template
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 md:ml-0">
+            <!-- Header -->
+            <header class="hidden md:flex bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 justify-between items-center sticky top-0 z-20">
+                <div class="flex items-center">
+                    <h2 class="text-xl font-semibold text-gray-900 dark:text-white" id="page-title">Dashboard</h2>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <!-- Search Bar -->
+                    <div class="relative">
+                        <input type="text" placeholder="Search..." class="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-primary-500 focus:border-primary-500">
+                        <i data-lucide="search" class="w-5 h-5 text-gray-400 absolute left-3 top-2.5"></i>
+                    </div>
+                    
+                    <!-- Notifications -->
+                    <div class="relative">
+                        <button onclick="toggleNotifications()" class="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 rounded-lg">
+                            <i data-lucide="bell" class="w-5 h-5"></i>
+                            <span id="notification-badge" class="notification-badge hidden">0</span>
+                        </button>
+                        
+                        <!-- Notifications Dropdown -->
+                        <div id="notifications-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                            <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+                                <h3 class="font-medium text-gray-900 dark:text-white">Notifications</h3>
+                            </div>
+                            <div id="notifications-list" class="max-h-64 overflow-y-auto">
+                                <div class="p-4 text-center text-gray-500 dark:text-gray-400">
+                                    No notifications
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Theme Toggle -->
+                    <button onclick="toggleTheme()" class="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 rounded-lg">
+                        <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+                        <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
+                    </button>
+                    
+                    <!-- User Menu -->
+                    <div class="relative">
+                        <button onclick="toggleUserMenu()" class="flex items-center p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 rounded-lg">
+                            <div class="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center">
+                                <i data-lucide="user" class="w-4 h-4 text-white"></i>
+                            </div>
+                        </button>
+                        
+                        <!-- User Menu Dropdown -->
+                        <div id="user-menu" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                            <div class="p-2">
+                                <a href="#profile" onclick="setActiveTab('profile')" class="block px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
+                                    <i data-lucide="user" class="w-4 h-4 mr-2 inline"></i>
+                                    Profile
+                                </a>
+                                <a href="#settings" onclick="setActiveTab('settings')" class="block px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
+                                    <i data-lucide="settings" class="w-4 h-4 mr-2 inline"></i>
+                                    Settings
+                                </a>
+                                <hr class="my-1 border-gray-200 dark:border-gray-700">
+                                <a href="#logout" class="block px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
+                                    <i data-lucide="log-out" class="w-4 h-4 mr-2 inline"></i>
+                                    Logout
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="p-6 max-w-7xl mx-auto">
+                
+                <!-- Dashboard Tab -->
+                <div id="dashboard-tab" class="tab-content">
+                    <!-- Financial Overview Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6 card-hover">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Balance</p>
+                                    <p id="total-balance" class="text-2xl font-bold text-gray-900 dark:text-white">$0</p>
+                                </div>
+                                <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center">
+                                    <i data-lucide="dollar-sign" class="w-6 h-6 text-green-600 dark:text-green-400"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-center">
+                                <span id="balance-change" class="text-sm text-green-600 dark:text-green-400">+0% from last month</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6 card-hover">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Monthly Income</p>
+                                    <p id="monthly-income" class="text-2xl font-bold text-gray-900 dark:text-white">$0</p>
+                                </div>
+                                <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
+                                    <i data-lucide="trending-up" class="w-6 h-6 text-blue-600 dark:text-blue-400"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-center">
+                                <span id="income-change" class="text-sm text-blue-600 dark:text-blue-400">+0% from last month</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6 card-hover">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Monthly Expenses</p>
+                                    <p id="monthly-expenses" class="text-2xl font-bold text-gray-900 dark:text-white">$0</p>
+                                </div>
+                                <div class="w-12 h-12 bg-red-100 dark:bg-red-900 rounded-lg flex items-center justify-center">
+                                    <i data-lucide="trending-down" class="w-6 h-6 text-red-600 dark:text-red-400"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-center">
+                                <span id="expenses-change" class="text-sm text-red-600 dark:text-red-400">+0% from last month</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6 card-hover">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Savings Rate</p>
+                                    <p id="savings-rate" class="text-2xl font-bold text-gray-900 dark:text-white">0%</p>
+                                </div>
+                                <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center">
+                                    <i data-lucide="piggy-bank" class="w-6 h-6 text-purple-600 dark:text-purple-400"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-center">
+                                <span id="savings-change" class="text-sm text-purple-600 dark:text-purple-400">+0% from last month</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Row -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                        <!-- Expense Breakdown Chart -->
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+                            <div class="flex items-center justify-between mb-6">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Expense Breakdown</h3>
+                                <div class="flex space-x-2">
+                                    <button onclick="updateExpenseChart('week')" class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">Week</button>
+                                    <button onclick="updateExpenseChart('month')" class="px-3 py-1 text-sm bg-primary-600 text-white rounded">Month</button>
+                                    <button onclick="updateExpenseChart('year')" class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">Year</button>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="expense-chart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Cash Flow Chart -->
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+                            <div class="flex items-center justify-between mb-6">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Cash Flow</h3>
+                                <div class="flex space-x-2">
+                                    <button onclick="updateCashFlowChart('week')" class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">Week</button>
+                                    <button onclick="updateCashFlowChart('month')" class="px-3 py-1 text-sm bg-primary-600 text-white rounded">Month</button>
+                                    <button onclick="updateCashFlowChart('year')" class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">Year</button>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="cashflow-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions & Recent Transactions -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Recent Transactions -->
+                        <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+                            <div class="flex items-center justify-between mb-6">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Recent Transactions</h3>
+                                <button onclick="openAddGoalModal()" class="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium">Add Goal</button>
+                            </div>
+                            
+                            <div id="recent-transactions" class="space-y-4">
+                                <!-- Transactions will be populated by JavaScript -->
+                                <div class="text-center text-gray-500 dark:text-gray-400 py-8">
+                                    <i data-lucide="receipt" class="w-12 h-12 mx-auto mb-4 text-gray-300 dark:text-gray-600"></i>
+                                    <p class="text-lg font-medium mb-2">No transactions yet</p>
+                                    <p class="text-sm">Add your first transaction to get started!</p>
+                                    <button onclick="openAddTransactionModal()" class="mt-4 bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200">
+                                        Add Transaction
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Stats & Actions -->
+                        <div class="space-y-6">
+                            <!-- Financial Goals -->
+                            <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Financial Goals</h3>
+                                    <button onclick="openAddAccountModal()" class="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center">
+                                        <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
+                                        Add Account
+                                    </button>
+                                </div>
+                                
+                                <div id="goals-summary" class="space-y-4">
+                                    <!-- Goals will be populated by JavaScript -->
+                                    <div class="text-center text-gray-500 dark:text-gray-400 py-4">
+                                        <i data-lucide="target" class="w-8 h-8 mx-auto mb-2 text-gray-300 dark:text-gray-600"></i>
+                                        <p class="text-sm">No goals set</p>
+                                        <div class="mt-3">
+                                            <button onclick="openAddAccountModal()" class="mt-4 bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200">
+                                                Add Account
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Quick Actions -->
+                            <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
+                                <div class="space-y-3">
+                                    <button onclick="openAddTransactionModal()" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center">
+                                        <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
+                                        Add Transaction
+                                    </button>
+                                    <button onclick="openAddAccountModal()" class="w-full border border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 text-gray-700 dark:text-gray-300 font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center">
+                                        <i data-lucide="wallet" class="w-4 h-4 mr-2"></i>
+                                        Add Account
+                                    </button>
+                                    <button onclick="setActiveTab('budgets')" class="w-full border border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 text-gray-700 dark:text-gray-300 font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center">
+                                        <i data-lucide="pie-chart" class="w-4 h-4 mr-2"></i>
+                                        View Budgets
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Transactions Tab -->
+                <div id="transactions-tab" class="tab-content hidden">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Transactions</h2>
+                            <p class="text-gray-600 dark:text-gray-400">Manage your income and expenses</p>
+                        </div>
+                        <button onclick="openAddTransactionModal()" class="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center mt-4 sm:mt-0">
+                            <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
+                            Add Transaction
+                        </button>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6 mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date Range</label>
+                                <select id="transaction-filter-date" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                                    <option value="all">All Time</option>
+                                    <option value="today">Today</option>
+                                    <option value="week">This Week</option>
+                                    <option value="month" selected>This Month</option>
+                                    <option value="year">This Year</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Type</label>
+                                <select id="transaction-filter-type" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                                    <option value="all">All Types</option>
+                                    <option value="income">Income</option>
+                                    <option value="expense">Expense</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category</label>
+                                <select id="transaction-filter-category" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                                    <option value="all">All Categories</option>
+                                </select>
+                            </div>
+                            <div class="flex items-end">
+                                <button onclick="filterTransactions()" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200">
+                                    Apply Filters
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Transactions List -->
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                        <div id="transactions-list">
+                            <!-- Transactions will be populated by JavaScript -->
+                            <div class="text-center text-gray-500 dark:text-gray-400 py-12">
+                                <i data-lucide="receipt" class="w-16 h-16 mx-auto mb-4 text-gray-300 dark:text-gray-600"></i>
+                                <p class="text-lg font-medium mb-2">No transactions found</p>
+                                <p class="text-sm mb-6">Start by adding your first transaction</p>
+                                <button onclick="openAddTransactionModal()" class="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200">
+                                    Add Transaction
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Accounts Tab -->
+                <div id="accounts-tab" class="tab-content hidden">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Accounts</h2>
+                            <p class="text-gray-600 dark:text-gray-400">Manage your bank accounts and wallets</p>
+                        </div>
+                        <button onclick="openAddAccountModal()" class="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center">
+                            <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
+                            Add Account
+                        </button>
+                    </div>
+
+                    <!-- Accounts Grid -->
+                    <div id="accounts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Accounts will be populated by JavaScript -->
+                        <div class="col-span-full text-center text-gray-500 dark:text-gray-400 py-12">
+                            <i data-lucide="wallet" class="w-16 h-16 mx-auto mb-4 text-gray-300 dark:text-gray-600"></i>
+                            <p class="text-lg font-medium mb-2">No accounts added</p>
+                            <p class="text-sm mb-6">Add your first account to start tracking your finances</p>
+                            <button onclick="openAddAccountModal()" class="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200">
+                                Add Account
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Budgets Tab -->
+                <div id="budgets-tab" class="tab-content hidden">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Budget Overview</h2>
+                            <p class="text-gray-600 dark:text-gray-400">Track your spending across categories</p>
+                        </div>
+                        <button onclick="openAddBudgetModal()" class="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center">
+                            <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
+                            Set Budget
+                        </button>
+                    </div>
+
+                    <!-- Budget Summary Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+                            <div class="text-center">
+                                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Budget</p>
+                                <p id="total-budget" class="text-2xl font-bold text-gray-900 dark:text-white">$0</p>
+                            </div>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+                            <div class="text-center">
+                                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Spent</p>
+                                <p id="total-spent" class="text-2xl font-bold text-gray-900 dark:text-white">$0</p>
+                            </div>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+                            <div class="text-center">
+                                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Remaining</p>
+                                <p id="remaining-budget" class="text-2xl font-bold text-gray-900 dark:text-white">$0</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Budget Categories -->
+                    <div id="budget-categories" class="space-y-6">
+                        <!-- Budget categories will be populated by JavaScript -->
+                        <div class="text-center text-gray-500 dark:text-gray-400 py-12">
+                            <i data-lucide="pie-chart" class="w-16 h-16 mx-auto mb-4 text-gray-300 dark:text-gray-600"></i>
+                            <p class="text-lg font-medium mb-2">No budget categories</p>
+                            <p class="text-sm mb-6">Set up your budget categories to track spending</p>
+                            <button onclick="openAddBudgetModal()" class="mt-4 bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200">
+                                Set Budget
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Goals Tab -->
+                <div id="goals-tab" class="tab-content hidden">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Financial Goals</h2>
+                            <p class="text-gray-600 dark:text-gray-400">Set and track your financial objectives</p>
+                        </div>
+                        <button onclick="openAddGoalModal()" class="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center">
+                            <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
+                            Add Goal
+                        </button>
+                    </div>
+
+                    <!-- Goals Grid -->
+                    <div id="goals-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Goals will be populated by JavaScript -->
+                        <div class="col-span-full text-center text-gray-500 dark:text-gray-400 py-12">
+                            <i data-lucide="target" class="w-16 h-16 mx-auto mb-4 text-gray-300 dark:text-gray-600"></i>
+                            <p class="text-lg font-medium mb-2">No goals set</p>
+                            <p class="text-sm mb-6">Create your first financial goal to start tracking progress</p>
+                            <button onclick="openAddGoalModal()" class="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200">
+                                Add Goal
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reports Tab -->
+                <div id="reports-tab" class="tab-content hidden">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Financial Reports</h2>
+                        <p class="text-gray-600 dark:text-gray-400">Analyze your financial performance</p>
+                    </div>
+
+                    <!-- Report Filters -->
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6 mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Report Type</label>
+                                <select id="report-type" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                                    <option value="monthly">Monthly Summary</option>
+                                    <option value="yearly">Yearly Summary</option>
+                                    <option value="category">Category Analysis</option>
+                                    <option value="trends">Trend Analysis</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Time Period</label>
+                                <select id="report-period" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                                    <option value="current">Current Period</option>
+                                    <option value="last">Last Period</option>
+                                    <option value="year">This Year</option>
+                                    <option value="custom">Custom Range</option>
+                                </select>
+                            </div>
+                            <div class="flex items-end">
+                                <button onclick="generateReport()" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200">
+                                    Generate Report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Report Content -->
+                    <div id="report-content" class="space-y-6">
+                        <div class="text-center text-gray-500 dark:text-gray-400 py-12">
+                            <i data-lucide="bar-chart-3" class="w-16 h-16 mx-auto mb-4 text-gray-300 dark:text-gray-600"></i>
+                            <p class="text-lg font-medium mb-2">No report generated</p>
+                            <p class="text-sm">Select your preferences and generate a report</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bills & Calendar Tab -->
+                <div id="bills-tab" class="tab-content hidden">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Bills & Calendar</h2>
+                        <p class="text-gray-600 dark:text-gray-400">Manage your recurring bills and payment schedule</p>
+                    </div>
+
+                    <!-- Bills Calendar will be implemented here -->
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+                        <div class="text-center text-gray-500 dark:text-gray-400 py-12">
+                            <i data-lucide="calendar" class="w-16 h-16 mx-auto mb-4 text-gray-300 dark:text-gray-600"></i>
+                            <p class="text-lg font-medium mb-2">Calendar view coming soon</p>
+                            <p class="text-sm">Bill management and calendar integration will be available in the next update</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div id="settings-tab" class="tab-content hidden">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Settings</h2>
+                        <p class="text-gray-600 dark:text-gray-400">Customize your dashboard preferences</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- General Settings -->
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">General Settings</h3>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Currency</label>
+                                    <select id="settings-currency" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                                        <option value="USD">USD ($)</option>
+                                        <option value="EUR">EUR (€)</option>
+                                        <option value="GBP">GBP (£)</option>
+                                        <option value="DOP">DOP (RD$)</option>
+                                        <option value="CAD">CAD (C$)</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date Format</label>
+                                    <select id="settings-date-format" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                                        <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                                        <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                                        <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Theme</label>
+                                    <select id="settings-theme" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                                        <option value="system">System</option>
+                                        <option value="light">Light</option>
+                                        <option value="dark">Dark</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Notification Settings -->
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Notifications</h3>
+                            
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Budget Alerts</label>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">Get notified when approaching budget limits</p>
+                                    </div>
+                                    <input type="checkbox" id="settings-budget-alerts" class="toggle-checkbox">
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Bill Reminders</label>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">Remind me of upcoming bill payments</p>
+                                    </div>
+                                    <input type="checkbox" id="settings-bill-reminders" class="toggle-checkbox">
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Goal Progress</label>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">Track progress on financial goals</p>
+                                    </div>
+                                    <input type="checkbox" id="settings-goal-progress" class="toggle-checkbox">
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Email Notifications</label>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">Receive email summaries</p>
+                                    </div>
+                                    <input type="checkbox" id="settings-email-notifications" class="toggle-checkbox">
+                                </div>
+                            </div>
+                            
+                            <div id="email-settings" class="mt-4 space-y-4 hidden">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email Address</label>
+                                    <input type="email" id="settings-notification-email" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" placeholder="your@email.com">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Frequency</label>
+                                    <select id="settings-notification-frequency" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                                        <option value="daily">Daily</option>
+                                        <option value="weekly">Weekly</option>
+                                        <option value="monthly">Monthly</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Security Settings -->
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Security & Privacy</h3>
+                            
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Two-Factor Authentication</label>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">Add an extra layer of security</p>
+                                    </div>
+                                    <input type="checkbox" id="settings-two-factor" class="toggle-checkbox">
+                                </div>
+                                
+                                <button class="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200">
+                                    Clear All Data
+                                </button>
+                                
+                                <button class="w-full border border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 text-gray-700 dark:text-gray-300 font-medium py-2 px-4 rounded-lg transition-colors duration-200">
+                                    Export Data
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Data Management -->
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Data Management</h3>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Backup Options</label>
+                                    <div class="space-y-2">
+                                        <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200">
+                                            Create Backup
+                                        </button>
+                                        <button class="w-full border border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 text-gray-700 dark:text-gray-300 font-medium py-2 px-4 rounded-lg transition-colors duration-200">
+                                            Restore from Backup
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Storage Usage</label>
+                                    <div class="bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                        <div class="bg-primary-600 h-2 rounded-full" style="width: 35%"></div>
+                                    </div>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">35% of local storage used</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Save Button -->
+                    <div class="mt-6 flex justify-end">
+                        <button onclick="saveSettings()" class="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200">
+                            Save Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Backdrop -->
+    <div id="modal-backdrop" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden" onclick="closeAllModals()"></div>
+
+    <!-- Add Transaction Modal -->
+    <div id="add-transaction-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Add Transaction</h3>
+                    <button onclick="closeModal('add-transaction-modal')" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                
+                <form id="transaction-form">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Type</label>
+                            <select id="transaction-type" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" required>
+                                <option value="expense">Expense</option>
+                                <option value="income">Income</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Amount</label>
+                            <input type="number" id="transaction-amount" step="0.01" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" placeholder="0.00" required>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description</label>
+                            <input type="text" id="transaction-description" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" placeholder="Transaction description" required>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category</label>
+                            <select id="transaction-category" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" required>
+                                <!-- Categories will be populated by JavaScript -->
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Account</label>
+                            <select id="transaction-account" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" required>
+                                <!-- Accounts will be populated by JavaScript -->
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date</label>
+                            <input type="date" id="transaction-date" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+  <div class="flex items-center">
+    <input type="checkbox" id="transaction-recurring" class="mr-2">
+    <label for="transaction-recurring" class="text-sm font-medium text-gray-700 dark:text-gray-300">Recurring Transaction</label>
+  </div>
+</div>
+
+<div id="recurring-options" class="hidden mt-4">
+  <div class="space-y-4">
+    <div>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Frequency</label>
+      <select id="transaction-frequency" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+        <option value="daily">Daily</option>
+        <option value="weekly">Weekly</option>
+        <option value="biweekly">Bi-weekly</option>
+        <option value="monthly">Monthly</option>
+        <option value="quarterly">Quarterly</option>
+        <option value="yearly">Yearly</option>
+      </select>
+    </div>
+    
+    <div>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Number of Transactions</label>
+      <input type="number" id="transaction-times" min="1" max="365" value="12" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" placeholder="12">
+      <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">How many recurring transactions to create</p>
+    </div>
+    
+    <!-- Date Preview Section -->
+    <div id="date-preview-container" class="hidden">
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Upcoming Dates Preview</label>
+      <div id="date-preview" class="date-preview">
+        <div class="text-sm font-medium mb-2">Next 5 Transactions:</div>
+        <div id="date-preview-list">
+          <!-- Dates will be populated by JavaScript -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+                    
+                    
+                    
+                    
+                    
+                    <div class="flex justify-end space-x-3 pt-4">
+                        <button type="button" onclick="closeModal('add-transaction-modal')" 
+                                class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+                            Cancel
+                        </button>
+                        <button type="submit" 
+                                class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium">
+                            Add Transaction
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Account Modal -->
+    <div id="add-account-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Add Account</h3>
+                    <button onclick="closeModal('add-account-modal')" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                
+                <form id="account-form">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Account Name</label>
+                            <input type="text" id="account-name" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" placeholder="My Checking Account" required>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Account Type</label>
+                            <select id="account-type" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" required>
+                                <option value="checking">Checking</option>
+                                <option value="savings">Savings</option>
+                                <option value="credit">Credit Card</option>
+                                <option value="investment">Investment</option>
+                                <option value="cash">Cash</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Initial Balance</label>
+                            <input type="number" id="account-balance" step="0.01" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" placeholder="0.00" required>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-3 pt-4">
+                        <button type="button" onclick="closeModal('add-account-modal')" 
+                                class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+                            Cancel
+                        </button>
+                        <button type="submit" 
+                                class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium">
+                            Add Account
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Budget Modal -->
+    <div id="add-budget-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Set Budget</h3>
+                    <button onclick="closeModal('add-budget-modal')" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                
+                <form id="budget-form">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category</label>
+                            <select id="budget-category" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" required>
+                                <!-- Categories will be populated by JavaScript -->
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Monthly Budget</label>
+                            <input type="number" id="budget-amount" step="0.01" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" placeholder="0.00" required>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-3 pt-4">
+                        <button type="button" onclick="closeModal('add-budget-modal')" 
+                                class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+                            Cancel
+                        </button>
+                        <button type="submit" 
+                                class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium">
+                            Set Budget
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Goal Modal -->
+    <div id="add-goal-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Add Financial Goal</h3>
+                    <button onclick="closeModal('add-goal-modal')" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                
+                <form id="goal-form">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Goal Name</label>
+                            <input type="text" id="goal-name" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" placeholder="Emergency Fund" required>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Target Amount</label>
+                            <input type="number" id="goal-target" step="0.01" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" placeholder="5000.00" required>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Current Amount</label>
+                            <input type="number" id="goal-current" step="0.01" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" placeholder="0.00">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Target Date</label>
+                            <input type="date" id="goal-date" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-3 pt-4">
+                        <button type="button" onclick="closeModal('add-goal-modal')" 
+                                class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+                            Cancel
+                        </button>
+                        <button type="submit" 
+                                class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium">
+                            Add Goal
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notion Template Modal -->
+    <div id="notion-template-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full p-6 max-h-[90vh] overflow-y-auto">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">📋 Notion Financial Template - Enhanced DOP Support</h3>
+                    <button onclick="closeModal('notion-template-modal')" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                
+                <div class="notion-template bg-gray-50 dark:bg-gray-700 rounded-lg p-6 mb-6">
+                    <div class="text-center mb-6">
+                        <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="file-text" class="w-8 h-8 text-blue-600 dark:text-blue-400"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Enhanced Finance Template with DOP Support</h2>
+                        <p class="text-gray-600 dark:text-gray-300">Complete Notion template with Dominican Peso (DOP) currency support and recurring transaction formulas</p>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">🎯 What's Included:</h3>
+                            <ul class="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300">
+                                <li>Complete database setup with DOP currency formatting (RD$)</li>
+                                <li>Recurring transaction formulas using dateAdd functions</li>
+                                <li>Budget tracking with visual progress indicators</li>
+                                <li>Monthly and yearly financial reports</li>
+                                <li>Goal tracking and milestone management</li>
+                                <li>Expense categorization system</li>
+                                <li>Income and expense analysis templates</li>
+                                <li>Enhanced formula readability with color coding</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">🚀 Enhanced Features:</h3>
+                            <ul class="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300">
+                                <li>Structured database properties in organized tables</li>
+                                <li>Automatic recurring transaction calculations</li>
+                                <li>Dominican Peso (DOP) currency format throughout</li>
+                                <li>Visual hierarchy with improved markdown</li>
+                                <li>Color coding support for quick identification</li>
+                                <li>Emoji indicators for rapid scanning</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">📋 Database Formulas:</h3>
+                            <div class="notion-code">
+# Budget Remaining Formula
+if(prop("Monthly Budget") > 0, prop("Monthly Budget") - prop("Current Spent"), 0)
+
+# Budget Progress Formula
+if(prop("Monthly Budget") > 0, round(prop("Current Spent") / prop("Monthly Budget") * 100), 0)
+
+# Days Until Target Formula
+dateBetween(prop("Target Date"), now(), "days")
+
+# Monthly Savings Required Formula
+if(prop("Target Date") > now(), (prop("Target Amount") - prop("Current Amount")) / dateBetween(prop("Target Date"), now(), "months"), 0)
+
+# Recurring Transaction Formula
+dateAdd(prop("Last Payment Date"), prop("Frequency"), "months")
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">💰 Currency Configuration:</h3>
+                            <div class="bg-blue-50 dark:bg-blue-900 rounded-lg p-4">
+                                <p class="text-blue-900 dark:text-blue-200 font-medium mb-2">Dominican Peso (DOP) Setup:</p>
+                                <ul class="text-sm text-blue-800 dark:text-blue-300 space-y-1">
+                                    <li>• Currency Symbol: RD$ (Dominican Peso)</li>
+                                    <li>• Format: RD$ #,##0.00</li>
+                                    <li>• All financial properties configured for DOP</li>
+                                    <li>• Automatic calculation formulas included</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">🔄 Recurring Transactions Setup:</h3>
+                            <ol class="list-decimal list-inside space-y-2 text-gray-700 dark:text-gray-300">
+                                <li>Create a "Frequency" property (select: Monthly, Weekly, Daily, Yearly)</li>
+                                <li>Add "Last Payment Date" property (date format)</li>
+                                <li>Add "Next Due Date" with formula: dateAdd(prop("Last Payment Date"), 1, prop("Frequency"))</li>
+                                <li>Use automation to update dates when transactions are logged</li>
+                            </ol>
+                        </div>
+
+                        <div class="bg-green-50 dark:bg-green-900 rounded-lg p-4">
+                            <h4 class="font-semibold text-green-900 dark:text-green-200 mb-2">✨ Key Improvements:</h4>
+                            <ul class="text-sm text-green-800 dark:text-green-300 space-y-1">
+                                <li>• Structured all database properties in organized tables</li>
+                                <li>• Added recurring transaction formula using dateAdd</li>
+                                <li>• Specified DOP currency format throughout</li>
+                                <li>• Enhanced visual hierarchy with markdown</li>
+                                <li>• Improved formula readability</li>
+                                <li>• Added color coding support notes</li>
+                                <li>• Added emoji indicators for quick scanning</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center">
+                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                        <p class="font-medium">Enhanced Template by Bebell Digital Solutions</p>
+                        <p>Includes databases, formulas, DOP currency support, and automation</p>
+                        <p class="text-xs mt-1">Version 2.0 - With Recurring Transactions & Dominican Peso Support</p>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button onclick="copyTemplateText()" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center">
+                            <i data-lucide="copy" class="w-4 h-4 mr-2"></i>
+                            Copy Template
+                        </button>
+                        <a href="https://www.notion.so/templates/personal-finance-tracker" target="_blank" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center">
+                            <i data-lucide="external-link" class="w-4 h-4 mr-2"></i>
+                            Visit Notion
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Buttons -->
+    <div class="floating-action-buttons">
+        <button onclick="openAddTransactionModal()" class="floating-button bg-primary-600 hover:bg-primary-700 text-white" title="Add Transaction">
+            <i data-lucide="plus" class="w-6 h-6"></i>
+        </button>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 right-4 z-50 hidden">
+        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4 flex items-center space-x-3 max-w-sm">
+            <div id="toast-icon" class="flex-shrink-0">
+                <!-- Icon will be inserted by JavaScript -->
+            </div>
+            <div id="toast-message" class="text-sm text-gray-900 dark:text-white">
+                <!-- Message will be inserted by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- JavaScript -->
+    <script>
+        // Enhanced Data Storage with Calendar Integration
+        class FinancialData {
+            constructor() {
+                this.accounts = this.loadFromStorage('accounts', []);
+                this.transactions = this.loadFromStorage('transactions', []);
+                this.categories = this.loadFromStorage('categories', this.getDefaultCategories());
+                this.goals = this.loadFromStorage('goals', []);
+                this.settings = this.loadFromStorage('settings', this.getDefaultSettings());
+                this.bills = this.loadFromStorage('bills', []);
+            }
+
+            loadFromStorage(key, defaultValue) {
+                try {
+                    const data = localStorage.getItem(`financialData_${key}`);
+                    return data ? JSON.parse(data) : defaultValue;
+                } catch (error) {
+                    console.error(`Error loading ${key} from storage:`, error);
+                    return defaultValue;
+                }
+            }
+
+            saveToStorage(key, data) {
+                try {
+                    localStorage.setItem(`financialData_${key}`, JSON.stringify(data));
+                } catch (error) {
+                    console.error(`Error saving ${key} to storage:`, error);
+                }
+            }
+
+            getDefaultCategories() {
+                return [
+                    { id: 1, name: "Housing", budget: 1500, color: "#3b82f6" },
+                    { id: 2, name: "Food", budget: 600, color: "#10b981" },
+                    { id: 3, name: "Transportation", budget: 300, color: "#f59e0b" },
+                    { id: 4, name: "Utilities", budget: 200, color: "#8b5cf6" },
+                    { id: 5, name: "Entertainment", budget: 150, color: "#ef4444" },
+                    { id: 6, name: "Healthcare", budget: 300, color: "#06b6d4" },
+                    { id: 7, name: "Shopping", budget: 250, color: "#84cc16" },
+                    { id: 8, name: "Salary", budget: 0, color: "#059669" },
+                    { id: 9, name: "Freelance", budget: 0, color: "#0ea5e9" },
+                    { id: 10, name: "Other", budget: 100, color: "#6b7280" }
+                ];
+            }
+
+            getDefaultSettings() {
+                return {
+                    theme: 'system',
+                    currency: 'USD',
+                    dateFormat: 'MM/DD/YYYY',
+                    budgetAlerts: true,
+                    billReminders: true,
+                    goalProgress: true,
+                    emailNotifications: false,
+                    notificationEmail: '',
+                    notificationFrequency: 'daily',
+                    twoFactor: false
+                };
+            }
+
+            // Account operations
+            addAccount(account) {
+                account.id = Date.now();
+                this.accounts.push(account);
+                this.saveToStorage('accounts', this.accounts);
+                return account;
+            }
+
+            updateAccount(id, updates) {
+                const index = this.accounts.findIndex(a => a.id === id);
+                if (index !== -1) {
+                    this.accounts[index] = { ...this.accounts[index], ...updates };
+                    this.saveToStorage('accounts', this.accounts);
+                    return this.accounts[index];
+                }
+                return null;
+            }
+
+            deleteAccount(id) {
+                this.accounts = this.accounts.filter(a => a.id !== id);
+                this.saveToStorage('accounts', this.accounts);
+            }
+
+            // Transaction operations
+            addTransaction(transaction) {
+                transaction.id = Date.now();
+                this.transactions.push(transaction);
+                
+                // Update account balance
+                const account = this.accounts.find(a => a.id === transaction.account);
+                if (account) {
+                    if (transaction.type === 'expense') {
+                        account.balance -= Math.abs(transaction.amount);
+                    } else if (transaction.type === 'income') {
+                        account.balance += Math.abs(transaction.amount);
+                    }
+                    this.saveToStorage('accounts', this.accounts);
+                }
+                
+                this.saveToStorage('transactions', this.transactions);
+                return transaction;
+            }
+
+            updateTransaction(id, updates) {
+                const index = this.transactions.findIndex(t => t.id === id);
+                if (index !== -1) {
+                    this.transactions[index] = { ...this.transactions[index], ...updates };
+                    this.saveToStorage('transactions', this.transactions);
+                    return this.transactions[index];
+                }
+                return null;
+            }
+
+            deleteTransaction(id) {
+                const transaction = this.transactions.find(t => t.id === id);
+                if (transaction) {
+                
+                
+                
+                    // Reverse account balance change
+                    const account = this.accounts.find(a => a.id === transaction.account);
+                    if (account) {
+                        if (transaction.type === 'expense') {
+                            account.balance += Math.abs(transaction.amount);
+                        } else if (transaction.type === 'income') {
+                            account.balance -= Math.abs(transaction.amount);
+                        }
+                        this.saveToStorage('accounts', this.accounts);
+                    }
+                }
+                
+                this.transactions = this.transactions.filter(t => t.id !== id);
+                this.saveToStorage('transactions', this.transactions);
+            }
+
+            // Category operations
+            addCategory(category) {
+                category.id = Date.now();
+                this.categories.push(category);
+                this.saveToStorage('categories', this.categories);
+                return category;
+            }
+
+            // Goal operations
+            addGoal(goal) {
+                goal.id = Date.now();
+                this.goals.push(goal);
+                this.saveToStorage('goals', this.goals);
+                return goal;
+            }
+
+            updateGoal(id, updates) {
+                const index = this.goals.findIndex(g => g.id === id);
+                if (index !== -1) {
+                    this.goals[index] = { ...this.goals[index], ...updates };
+                    this.saveToStorage('goals', this.goals);
+                    return this.goals[index];
+                }
+                return null;
+            }
+
+            deleteGoal(id) {
+                this.goals = this.goals.filter(g => g.id !== id);
+                this.saveToStorage('goals', this.goals);
+            }
+
+            // Settings operations
+            updateSettings(updates) {
+                this.settings = { ...this.settings, ...updates };
+                this.saveToStorage('settings', this.settings);
+            }
+
+            // Bills operations
+            addBill(bill) {
+                bill.id = Date.now();
+                this.bills.push(bill);
+                this.saveToStorage('bills', this.bills);
+                return bill;
+            }
+
+            // Clear all data
+            clearAllData() {
+                this.accounts = [];
+                this.transactions = [];
+                this.categories = this.getDefaultCategories();
+                this.goals = [];
+                this.bills = [];
+                this.settings = this.getDefaultSettings();
+                
+                // Clear localStorage
+                Object.keys(localStorage).forEach(key => {
+                    if (key.startsWith('financialData_')) {
+                        localStorage.removeItem(key);
+                    }
+                });
+                
+                // Save default data
+                this.saveToStorage('categories', this.categories);
+                this.saveToStorage('settings', this.settings);
+            }
+        }
+
+        // Global variables
+        let financialData = new FinancialData();
+        let currentTab = 'dashboard';
+        let charts = {};
+
+        // Theme Management
+        function initializeTheme() {
+            const theme = financialData.settings.theme;
+            if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        }
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.contains('dark');
+            if (isDark) {
+                document.documentElement.classList.remove('dark');
+                financialData.updateSettings({ theme: 'light' });
+            } else {
+                document.documentElement.classList.add('dark');
+                financialData.updateSettings({ theme: 'dark' });
+            }
+        }
+
+        // Navigation
+        function setActiveTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            
+            // Show selected tab
+            const tab = document.getElementById(`${tabName}-tab`);
+            if (tab) {
+                tab.classList.remove('hidden');
+            }
+            
+            // Update sidebar
+            document.querySelectorAll('.sidebar-menu-item, .mobile-menu-item').forEach(item => {
+                item.classList.remove('bg-primary-50', 'dark:bg-primary-900', 'text-primary-600', 'dark:text-primary-400', 'font-medium');
+                item.classList.add('text-gray-700', 'dark:text-gray-300');
+            });
+            
+            const activeItems = document.querySelectorAll(`[href="#${tabName}"]`);
+            activeItems.forEach(item => {
+                item.classList.add('bg-primary-50', 'dark:bg-primary-900', 'text-primary-600', 'dark:text-primary-400', 'font-medium');
+                item.classList.remove('text-gray-700', 'dark:text-gray-300');
+            });
+            
+            // Update page title
+            const pageTitle = document.getElementById('page-title');
+            if (pageTitle) {
+                pageTitle.textContent = tabName.charAt(0).toUpperCase() + tabName.slice(1);
+            }
+            
+            currentTab = tabName;
+            
+            // Load data for specific tabs
+            if (tabName === 'dashboard') {
+                loadDashboardData();
+            } else if (tabName === 'transactions') {
+                loadTransactions();
+            } else if (tabName === 'accounts') {
+                loadAccounts();
+            } else if (tabName === 'budgets') {
+                loadBudgets();
+            } else if (tabName === 'goals') {
+                loadGoals();
+            } else if (tabName === 'settings') {
+                loadSettings();
+            }
+        }
+
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            const sidebar = document.getElementById('sidebar');
+            
+            if (window.innerWidth < 768) {
+                // Mobile view - toggle mobile menu
+                mobileMenu.classList.toggle('hidden');
+            } else {
+                // Desktop view - toggle sidebar
+                sidebar.classList.toggle('hidden');
+            }
+        }
+
+        // Utility Functions
+        function formatCurrency(amount) {
+            const currency = financialData.settings.currency;
+            const currencySymbols = {
+                'USD': '$',
+                'EUR': '€',
+                'GBP': '£',
+                'DOP': 'RD$',
+                'CAD': 'C$'
+            };
+            
+            const symbol = currencySymbols[currency] || '$';
+            return `${symbol}${Math.abs(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const format = financialData.settings.dateFormat;
+            
+            if (format === 'DD/MM/YYYY') {
+                return date.toLocaleDateString('en-GB');
+            } else if (format === 'YYYY-MM-DD') {
+                return date.toISOString().split('T')[0];
+            } else {
+                return date.toLocaleDateString('en-US');
+            }
+        }
+
+        // Notification Functions
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastIcon = document.getElementById('toast-icon');
+            const toastMessage = document.getElementById('toast-message');
+            
+            const icons = {
+                success: '<i data-lucide="check-circle" class="w-5 h-5 text-green-600"></i>',
+                error: '<i data-lucide="x-circle" class="w-5 h-5 text-red-600"></i>',
+                warning: '<i data-lucide="alert-triangle" class="w-5 h-5 text-yellow-600"></i>',
+                info: '<i data-lucide="info" class="w-5 h-5 text-blue-600"></i>'
+            };
+            
+            toastIcon.innerHTML = icons[type] || icons.info;
+            toastMessage.textContent = message;
+            
+            toast.classList.remove('hidden');
+            
+            // Initialize Lucide icons for the toast
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+            
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        function toggleNotifications() {
+            const dropdown = document.getElementById('notifications-dropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        function toggleUserMenu() {
+            const menu = document.getElementById('user-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(event) {
+            const notificationsDropdown = document.getElementById('notifications-dropdown');
+            const userMenu = document.getElementById('user-menu');
+            
+            if (!event.target.closest('#notifications-dropdown') && !event.target.closest('[onclick="toggleNotifications()"]')) {
+                notificationsDropdown?.classList.add('hidden');
+            }
+            
+            if (!event.target.closest('#user-menu') && !event.target.closest('[onclick="toggleUserMenu()"]')) {
+                userMenu?.classList.add('hidden');
+            }
+        });
+
+        // 4. NOTION TEMPLATE POPUP IMPLEMENTATION
+        function openNotionTemplateModal() {
+            showModal('notion-template-modal');
+        }
+
+        function copyTemplateText() {
+            const templateText = `
+# Enhanced Personal Finance Template with DOP Support
+
+## 🚀 Quick Setup Guide:
+1. Copy this template into a new Notion page
+2. Create the databases following the table structures below
+3. Configure currency to Dominican Peso (DOP) format: RD$ #,##0.00
+4. Set up the formulas as specified
+5. Delete existing sample data from each database
+6. Add your accounts with initial balances
+7. Set up your expense categories and monthly budgets
+8. Start tracking your transactions with recurring options
+
+## 💰 Currency Configuration (Dominican Peso - DOP):
+- Currency Symbol: RD$ (Dominican Peso)
+- Format: RD$ #,##0.00
+- All financial properties configured for DOP
+
+## 📊 Database Structures:
+
+### 📱 Accounts Database
+| Property | Type | Description |
+|----------|------|-------------|
+| Name | Title | Account name |
+| Type | Select | Checking, Savings, Credit, Investment, Cash |
+| Balance | Number (DOP) | Current balance in RD$ |
+| Institution | Text | Bank or financial institution |
+| Notes | Text | Additional notes |
+
+### 💳 Transactions Database
+| Property | Type | Description |
+|----------|------|-------------|
+| Description | Title | Transaction description |
+| Amount | Number (DOP) | Amount in RD$ |
+| Type | Select | Income, Expense, Transfer |
+| Category | Relation | Link to Categories database |
+| Account | Relation | Link to Accounts database |
+| Date | Date | Transaction date |
+| Recurring | Checkbox | Is this a recurring transaction? |
+| Frequency | Select | Daily, Weekly, Monthly, Yearly |
+| Next Due | Formula | dateAdd(prop("Date"), 1, prop("Frequency")) |
+
+### 📂 Categories Database
+| Property | Type | Description |
+|----------|------|-------------|
+| Name | Title | Category name |
+| Type | Select | Income, Expense |
+| Budget | Number (DOP) | Monthly budget in RD$ |
+| Color | Select | Visual identifier |
+| Current Spent | Rollup | Sum of related transactions |
+| Budget Remaining | Formula | if(prop("Budget") > 0, prop("Budget") - prop("Current Spent"), 0) |
+| Budget Progress | Formula | if(prop("Budget") > 0, round(prop("Current Spent") / prop("Budget") * 100), 0) |
+
+### 🎯 Goals Database
+| Property | Type | Description |
+|----------|------|-------------|
+| Name | Title | Goal name |
+| Target Amount | Number (DOP) | Target amount in RD$ |
+| Current Amount | Number (DOP) | Current saved amount in RD$ |
+| Target Date | Date | Target completion date |
+| Progress | Formula | round(prop("Current Amount") / prop("Target Amount") * 100) |
+| Days Remaining | Formula | dateBetween(prop("Target Date"), now(), "days") |
+| Monthly Required | Formula | if(prop("Target Date") > now(), (prop("Target Amount") - prop("Current Amount")) / dateBetween(prop("Target Date"), now(), "months"), 0) |
+
+## 🔄 Recurring Transaction Formulas:
+
+### Next Due Date:
+\`\`\`
+dateAdd(prop("Last Payment Date"), 1, prop("Frequency"))
+\`\`\`
+
+### Budget Remaining:
+\`\`\`
+if(prop("Monthly Budget") > 0, prop("Monthly Budget") - prop("Current Spent"), 0)
+\`\`\`
+
+### Budget Progress Percentage:
+\`\`\`
+if(prop("Monthly Budget") > 0, round(prop("Current Spent") / prop("Monthly Budget") * 100), 0)
+\`\`\`
+
+### Days Until Target:
+\`\`\`
+dateBetween(prop("Target Date"), now(), "days")
+\`\`\`
+
+### Monthly Savings Required:
+\`\`\`
+if(prop("Target Date") > now(), (prop("Target Amount") - prop("Current Amount")) / dateBetween(prop("Target Date"), now(), "months"), 0)
+\`\`\`
+
+## 🎨 Features Included:
+- ✅ Complete database setup for accounts, transactions, and categories
+- ✅ Dominican Peso (DOP) currency formatting throughout
+- ✅ Budget tracking with visual progress indicators  
+- ✅ Monthly and yearly financial reports
+- ✅ Goal tracking and milestone management
+- ✅ Expense categorization system
+- ✅ Recurring transaction automation
+- ✅ Income and expense analysis templates
+- ✅ Enhanced visual hierarchy with emoji indicators
+- ✅ Color coding support for quick identification
+- ✅ Structured formula organization
+
+## 💡 Pro Tips:
+- 📌 Select the correct category for each expense to track budget accurately
+- 📌 Update your account balances regularly for accurate reporting  
+- 📌 Use the transfer function to move money between accounts
+- 📌 Set realistic monthly budgets based on your spending history
+- 📌 Set up recurring transactions for regular bills and income
+- 📌 Use color coding to quickly identify different types of transactions
+- 📌 Review your goals monthly and adjust targets as needed
+
+## 🔧 Setup Instructions:
+1. Create each database using the structures above
+2. Configure number properties to use DOP currency format (RD$ #,##0.00)
+3. Add the formulas to calculated properties
+4. Set up relations between databases
+5. Create sample categories (Housing, Food, Transportation, etc.)
+6. Add your bank accounts with current balances
+7. Start logging transactions and set up recurring ones
+
+## 🎯 Enhanced Version Features:
+- Structured database properties in organized tables
+- Added recurring transaction formula using dateAdd
+- Specified DOP currency format throughout
+- Enhanced visual hierarchy with markdown
+- Improved formula readability
+- Added color coding support notes  
+- Added emoji indicators for quick scanning
+
+Created by Bebell Digital Solutions
+Template Version 2.0 - Enhanced with DOP Support & Recurring Transactions
+            `.trim();
+
+            navigator.clipboard.writeText(templateText).then(() => {
+                showToast('Enhanced Notion template copied to clipboard!', 'success');
+            }).catch(() => {
+                showToast('Failed to copy template text', 'error');
+            });
+        }
+
+        // 5. EMAIL NOTIFICATIONS IMPLEMENTATION
+        function initializeEmailJS() {
+            // Initialize EmailJS with your public key
+            // You'll need to replace 'YOUR_PUBLIC_KEY' with your actual EmailJS public key
+            if (typeof emailjs !== 'undefined') {
+                emailjs.init('pzi6GkEVpxFMX_PUe'); // Replace with your EmailJS public key
+                emailJS = emailjs;
+            }
+        }
+
+        function sendEmailNotification(type, data) {
+            if (!financialData.settings.emailNotifications || !financialData.settings.notificationEmail) {
+                return;
+            }
+
+            const templates = {
+                budgetAlert: {
+                    templateId: 'budget_alert_template',
+                    subject: '💰 Budget Alert - Approaching Limit',
+                    message: `You've spent ${formatCurrency(data.spent)} of your ${formatCurrency(data.budget)} budget for ${data.category}.`
+                },
+                billReminder: {
+                    templateId: 'bill_reminder_template', 
+                    subject: '📅 Bill Reminder',
+                    message: `Your ${data.billName} payment of ${formatCurrency(data.amount)} is due on ${formatDate(data.dueDate)}.`
+                },
+                goalProgress: {
+                    templateId: 'goal_progress_template',
+                    subject: '🎯 Goal Progress Update', 
+                    message: `You're ${data.progress}% towards your goal "${data.goalName}" (${formatCurrency(data.current)} of ${formatCurrency(data.target)}).`
+                }
+            };
+
+            const template = templates[type];
+            if (!template || typeof emailjs === 'undefined') {
+                return;
+            }
+
+            const templateParams = {
+                to_email: financialData.settings.notificationEmail,
+                subject: template.subject,
+                message: template.message,
+                user_name: 'User' // You can customize this
+            };
+
+            emailjs.send('YOUR_SERVICE_ID', template.templateId, templateParams)
+                .then(() => {
+                    console.log('Email notification sent successfully');
+                })
+                .catch((error) => {
+                    console.error('Email notification failed:', error);
+                });
+        }
+
+        // 6. ADVANCED CHART IMPLEMENTATIONS
+        function initCharts() {
+            initExpenseChart();
+            initCashFlowChart();
+        }
+
+        function initExpenseChart() {
+            const ctx = document.getElementById('expense-chart');
+            if (!ctx) return;
+
+            // Destroy existing chart if it exists
+            if (charts.expenseChart) {
+                charts.expenseChart.destroy();
+            }
+
+            const expenses = financialData.transactions.filter(t => t.type === 'expense' && t.amount < 0);
+            const categoryData = {};
+            
+            expenses.forEach(transaction => {
+                const category = financialData.categories.find(c => c.id === transaction.category);
+                const categoryName = category ? category.name : 'Other';
+                const categoryColor = category ? category.color : '#6b7280';
+                
+                if (!categoryData[categoryName]) {
+                    categoryData[categoryName] = {
+                        amount: 0,
+                        color: categoryColor
+                    };
+                }
+                categoryData[categoryName].amount += Math.abs(transaction.amount);
+            });
+
+            const labels = Object.keys(categoryData);
+            const data = Object.values(categoryData).map(item => item.amount);
+            const colors = Object.values(categoryData).map(item => item.color);
+
+            charts.expenseChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors,
+                        borderWidth: 2,
+                        borderColor: document.documentElement.classList.contains('dark') ? '#374151' : '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: document.documentElement.classList.contains('dark') ? '#f3f4f6' : '#374151',
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function initCashFlowChart() {
+            const ctx = document.getElementById('cashflow-chart');
+            if (!ctx) return;
+
+            // Destroy existing chart if it exists
+            if (charts.cashFlowChart) {
+                charts.cashFlowChart.destroy();
+            }
+
+            // Get last 12 months of data
+            const months = [];
+            const incomeData = [];
+            const expenseData = [];
+            
+            for (let i = 11; i >= 0; i--) {
+                const date = new Date();
+                date.setMonth(date.getMonth() - i);
+                const monthKey = date.toISOString().slice(0, 7); // YYYY-MM format
+                
+                months.push(date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }));
+                
+                const monthTransactions = financialData.transactions.filter(t => 
+                    t.date.startsWith(monthKey)
+                );
+                
+                const income = monthTransactions
+                    .filter(t => t.type === 'income')
+                    .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+                    
+                const expenses = monthTransactions
+                    .filter(t => t.type === 'expense')
+                    .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+                
+                incomeData.push(income);
+                expenseData.push(expenses);
+            }
+
+            charts.cashFlowChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [
+                        {
+                            label: 'Income',
+                            data: incomeData,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Expenses',
+                            data: expenseData,
+                            borderColor: '#ef4444', 
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: document.documentElement.classList.contains('dark') ? '#f3f4f6' : '#374151'
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: document.documentElement.classList.contains('dark') ? '#9ca3af' : '#6b7280'
+                            },
+                            grid: {
+                                color: document.documentElement.classList.contains('dark') ? '#374151' : '#e5e7eb'
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: document.documentElement.classList.contains('dark') ? '#9ca3af' : '#6b7280',
+                                callback: function(value) {
+                                    return formatCurrency(value);
+                                }
+                            },
+                            grid: {
+                                color: document.documentElement.classList.contains('dark') ? '#374151' : '#e5e7eb'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateExpenseChart(period) {
+            // Update chart based on period selection
+            initExpenseChart(); // Simplified for now
+        }
+
+        function updateCashFlowChart(period) {
+            // Update chart based on period selection  
+            initCashFlowChart(); // Simplified for now
+        }
+
+        // Data Loading Functions
+        function loadAllData() {
+            loadDashboardData();
+            loadTransactions();
+            loadAccounts();
+            loadBudgets();
+            loadGoals();
+            populateFormOptions();
+        }
+
+        function loadDashboardData() {
+            // Calculate totals
+            const totalBalance = financialData.accounts.reduce((sum, account) => sum + account.balance, 0);
+            const currentMonth = new Date().toISOString().slice(0, 7);
+            
+            const monthlyTransactions = financialData.transactions.filter(t => 
+                t.date.startsWith(currentMonth)
+            );
+            
+            const monthlyIncome = monthlyTransactions
+                .filter(t => t.type === 'income')
+                .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+                
+            const monthlyExpenses = monthlyTransactions
+                .filter(t => t.type === 'expense')
+                .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+                
+            const savingsRate = monthlyIncome > 0 ? ((monthlyIncome - monthlyExpenses) / monthlyIncome * 100) : 0;
+
+            // Update dashboard cards
+            document.getElementById('total-balance').textContent = formatCurrency(totalBalance);
+            document.getElementById('monthly-income').textContent = formatCurrency(monthlyIncome);
+            document.getElementById('monthly-expenses').textContent = formatCurrency(monthlyExpenses);
+            document.getElementById('savings-rate').textContent = `${savingsRate.toFixed(1)}%`;
+
+            // Load recent transactions
+            loadRecentTransactions();
+            
+            // Load goals summary
+            loadGoalsSummary();
+        }
+
+        function loadRecentTransactions() {
+            const container = document.getElementById('recent-transactions');
+            if (!container) return;
+
+            const recentTransactions = financialData.transactions
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 5);
+
+            if (recentTransactions.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-500 dark:text-gray-400 py-8">
+                        <i data-lucide="receipt" class="w-12 h-12 mx-auto mb-4 text-gray-300 dark:text-gray-600"></i>
+                        <p class="text-lg font-medium mb-2">No transactions yet</p>
+                        <p class="text-sm">Add your first transaction to get started!</p>
+                        <button onclick="openAddTransactionModal()" class="mt-4 bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200">
+                            Add Transaction
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            const transactionsHTML = recentTransactions.map(transaction => {
+                const category = financialData.categories.find(c => c.id === transaction.category);
+                const account = financialData.accounts.find(a => a.id === transaction.account);
+                const isIncome = transaction.type === 'income';
+                
+                return `
+                    <div class="flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 ${isIncome ? 'bg-green-100 dark:bg-green-900' : 'bg-red-100 dark:bg-red-900'} rounded-lg flex items-center justify-center">
+                                <i data-lucide="${isIncome ? 'arrow-down' : 'arrow-up'}" class="w-5 h-5 ${isIncome ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900 dark:text-white">${transaction.description}</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">${category ? category.name : 'Unknown'} • ${account ? account.name : 'Unknown'}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-medium ${isIncome ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}">
+                                ${isIncome ? '+' : '-'}${formatCurrency(Math.abs(transaction.amount))}
+                            </p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">${formatDate(transaction.date)}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = transactionsHTML;
+            
+            // Initialize Lucide icons
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+
+        function loadGoalsSummary() {
+            const container = document.getElementById('goals-summary');
+            if (!container) return;
+
+            if (financialData.goals.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-500 dark:text-gray-400 py-4">
+                        <i data-lucide="target" class="w-8 h-8 mx-auto mb-2 text-gray-300 dark:text-gray-600"></i>
+                        <p class="text-sm">No goals set</p>
+                        <div class="mt-3">
+                            <button onclick="openAddAccountModal()" class="mt-4 bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200">
+                                Add Account
+                            </button>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            const goalsHTML = financialData.goals.slice(0, 3).map(goal => {
+                const progress = goal.target > 0 ? (goal.current / goal.target * 100) : 0;
+                
+                return `
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-medium text-gray-900 dark:text-white">${goal.name}</span>
+                            <span class="text-sm text-gray-500 dark:text-gray-400">${progress.toFixed(0)}%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div class="bg-primary-600 h-2 rounded-full progress-bar" style="width: ${Math.min(progress, 100)}%"></div>
+                        </div>
+                        <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+                            <span>${formatCurrency(goal.current)}</span>
+                            <span>${formatCurrency(goal.target)}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = goalsHTML;
+        }
+
+        function loadTransactions() {
+            const container = document.getElementById('transactions-list');
+            if (!container) return;
+
+            if (financialData.transactions.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-500 dark:text-gray-400 py-12">
+                        <i data-lucide="receipt" class="w-16 h-16 mx-auto mb-4 text-gray-300 dark:text-gray-600"></i>
+                        <p class="text-lg font-medium mb-2">No transactions found</p>
+                        <p class="text-sm mb-6">Start by adding your first transaction</p>
+                        <button onclick="openAddTransactionModal()" class="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200">
+                            Add Transaction
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            const sortedTransactions = financialData.transactions
+                .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            const transactionsHTML = sortedTransactions.map(transaction => {
+                const category = financialData.categories.find(c => c.id === transaction.category);
+                const account = financialData.accounts.find(a => a.id === transaction.account);
+                const isIncome = transaction.type === 'income';
+                
+                return `
+                    <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 ${isIncome ? 'bg-green-100 dark:bg-green-900' : 'bg-red-100 dark:bg-red-900'} rounded-lg flex items-center justify-center">
+                                <i data-lucide="${isIncome ? 'arrow-down' : 'arrow-up'}" class="w-6 h-6 ${isIncome ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900 dark:text-white">${transaction.description}</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">${category ? category.name : 'Unknown'}</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">${account ? account.name : 'Unknown'}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <div class="text-right">
+                                <p class="font-medium ${isIncome ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}">
+                                    ${isIncome ? '+' : '-'}${formatCurrency(Math.abs(transaction.amount))}
+                                </p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">${formatDate(transaction.date)}</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button onclick="editTransaction(${transaction.id})" class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                                    <i data-lucide="edit" class="w-4 h-4"></i>
+                                </button>
+                                <button onclick="deleteTransaction(${transaction.id})" class="p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400">
+                                    <i data-lucide="trash" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = `<div class="divide-y divide-gray-200 dark:divide-gray-700">${transactionsHTML}</div>`;
+            
+            // Initialize Lucide icons
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+
+        function loadAccounts() {
+            const container = document.getElementById('accounts-grid');
+            if (!container) return;
+
+            if (financialData.accounts.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center text-gray-500 dark:text-gray-400 py-12">
+                        <i data-lucide="wallet" class="w-16 h-16 mx-auto mb-4 text-gray-300 dark:text-gray-600"></i>
+                        <p class="text-lg font-medium mb-2">No accounts added</p>
+                        <p class="text-sm mb-6">Add your first account to start tracking your finances</p>
+                        <button onclick="openAddAccountModal()" class="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200">
+                            Add Account
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            const accountsHTML = financialData.accounts.map(account => {
+                const iconMap = {
+                    checking: 'credit-card',
+                    savings: 'piggy-bank',
+                    credit: 'credit-card',
+                    investment: 'trending-up',
+                    cash: 'banknote'
+                };
+                
+                const colorMap = {
+                    checking: 'blue',
+                    savings: 'green',
+                    credit: 'red',
+                    investment: 'purple',
+                    cash: 'yellow'
+                };
+                
+                const icon = iconMap[account.type] || 'wallet';
+                const color = colorMap[account.type] || 'gray';
+                
+                return `
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6 card-hover">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-${color}-100 dark:bg-${color}-900 rounded-lg flex items-center justify-center">
+                                <i data-lucide="${icon}" class="w-6 h-6 text-${color}-600 dark:text-${color}-400"></i>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button onclick="editAccount(${account.id})" class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                                    <i data-lucide="edit" class="w-4 h-4"></i>
+                                </button>
+                                <button onclick="deleteAccount(${account.id})" class="p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400">
+                                    <i data-lucide="trash" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-gray-900 dark:text-white">${account.name}</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 capitalize">${account.type}</p>
+                            <p class="text-2xl font-bold text-gray-900 dark:text-white mt-2">${formatCurrency(account.balance)}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = accountsHTML;
+            
+            // Initialize Lucide icons
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+
+        function loadBudgets() {
+            const container = document.getElementById('budget-categories');
+            if (!container) return;
+
+            // Calculate budget totals
+            const totalBudget = financialData.categories.reduce((sum, cat) => sum + (cat.budget || 0), 0);
+            
+            // Calculate spent amounts by category
+            const currentMonth = new Date().toISOString().slice(0, 7);
+            const monthlyExpenses = financialData.transactions.filter(t => 
+                t.type === 'expense' && t.date.startsWith(currentMonth)
+            );
+            
+            const categorySpending = {};
+            monthlyExpenses.forEach(transaction => {
+                if (!categorySpending[transaction.category]) {
+                    categorySpending[transaction.category] = 0;
+                }
+                categorySpending[transaction.category] += Math.abs(transaction.amount);
+            });
+            
+            const totalSpent = Object.values(categorySpending).reduce((sum, amount) => sum + amount, 0);
+            const remainingBudget = totalBudget - totalSpent;
+
+            // Update summary cards
+            document.getElementById('total-budget').textContent = formatCurrency(totalBudget);
+            document.getElementById('total-spent').textContent = formatCurrency(totalSpent);
+            document.getElementById('remaining-budget').textContent = formatCurrency(remainingBudget);
+
+            if (financialData.categories.filter(cat => cat.budget > 0).length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-500 dark:text-gray-400 py-12">
+                        <i data-lucide="pie-chart" class="w-16 h-16 mx-auto mb-4 text-gray-300 dark:text-gray-600"></i>
+                        <p class="text-lg font-medium mb-2">No budget categories</p>
+                        <p class="text-sm mb-6">Set up your budget categories to track spending</p>
+                        <button onclick="openAddBudgetModal()" class="mt-4 bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200">
+                            Set Budget
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            const budgetHTML = financialData.categories
+                .filter(category => category.budget > 0)
+                .map(category => {
+                    const spent = categorySpending[category.id] || 0;
+                    const progress = category.budget > 0 ? (spent / category.budget * 100) : 0;
+                    const remaining = category.budget - spent;
+                    const isOverBudget = spent > category.budget;
+                    
+                    return `
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-3 h-3 rounded-full" style="background-color: ${category.color}"></div>
+                                    <h3 class="font-medium text-gray-900 dark:text-white">${category.name}</h3>
+                                </div>
+                                <button onclick="editBudget(${category.id})" class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                                    <i data-lucide="edit" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="space-y-3">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600 dark:text-gray-400">Spent</span>
+                                    <span class="${isOverBudget ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white'} font-medium">
+                                        ${formatCurrency(spent)}
+                                    </span>
+                                </div>
+                                
+                                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                    <div class="h-2 rounded-full progress-bar ${isOverBudget ? 'bg-red-500' : 'bg-primary-600'}" 
+                                         style="width: ${Math.min(progress, 100)}%"></div>
+                                </div>
+                                
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600 dark:text-gray-400">Budget</span>
+                                    <span class="text-gray-900 dark:text-white font-medium">${formatCurrency(category.budget)}</span>
+                                </div>
+                                
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600 dark:text-gray-400">Remaining</span>
+                                    <span class="${remaining >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'} font-medium">
+                                        ${formatCurrency(remaining)}
+                                    </span>
+                                </div>
+                                
+                                <div class="text-center">
+                                    <span class="text-sm font-medium ${isOverBudget ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white'}">
+                                        ${progress.toFixed(1)}% of budget used
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            container.innerHTML = budgetHTML;
+            
+            // Initialize Lucide icons
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+
+        function loadGoals() {
+            const container = document.getElementById('goals-grid');
+            if (!container) return;
+
+            if (financialData.goals.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center text-gray-500 dark:text-gray-400 py-12">
+                        <i data-lucide="target" class="w-16 h-16 mx-auto mb-4 text-gray-300 dark:text-gray-600"></i>
+                        <p class="text-lg font-medium mb-2">No goals set</p>
+                        <p class="text-sm mb-6">Create your first financial goal to start tracking progress</p>
+                        <button onclick="openAddGoalModal()" class="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200">
+                            Add Goal
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            const goalsHTML = financialData.goals.map(goal => {
+                const progress = goal.target > 0 ? (goal.current / goal.target * 100) : 0;
+                const remaining = goal.target - goal.current;
+                
+                // Calculate days remaining
+                let daysRemaining = 'No deadline';
+                if (goal.date) {
+                    const targetDate = new Date(goal.date);
+                    const today = new Date();
+                    const diffTime = targetDate - today;
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    daysRemaining = diffDays > 0 ? `${diffDays} days remaining` : 'Overdue';
+                }
+                
+                return `
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6 card-hover">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center">
+                                <i data-lucide="target" class="w-6 h-6 text-purple-600 dark:text-purple-400"></i>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button onclick="editGoal(${goal.id})" class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                                    <i data-lucide="edit" class="w-4 h-4"></i>
+                                </button>
+                                <button onclick="deleteGoal(${goal.id})" class="p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400">
+                                    <i data-lucide="trash" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <h3 class="font-medium text-gray-900 dark:text-white">${goal.name}</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">${daysRemaining}</p>
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600 dark:text-gray-400">Progress</span>
+                                    <span class="text-gray-900 dark:text-white font-medium">${progress.toFixed(1)}%</span>
+                                </div>
+                                
+                                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                    <div class="bg-purple-600 h-2 rounded-full progress-bar" style="width: ${Math.min(progress, 100)}%"></div>
+                                </div>
+                                
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600 dark:text-gray-400">Current</span>
+                                    <span class="text-gray-900 dark:text-white font-medium">${formatCurrency(goal.current)}</span>
+                                </div>
+                                
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600 dark:text-gray-400">Target</span>
+                                    <span class="text-gray-900 dark:text-white font-medium">${formatCurrency(goal.target)}</span>
+                                </div>
+                                
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600 dark:text-gray-400">Remaining</span>
+                                    <span class="text-purple-600 dark:text-purple-400 font-medium">${formatCurrency(remaining)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = goalsHTML;
+            
+            // Initialize Lucide icons
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+
+        function loadSettings() {
+            // Load current settings into form
+            const settings = financialData.settings;
+            
+            document.getElementById('settings-currency').value = settings.currency;
+            document.getElementById('settings-date-format').value = settings.dateFormat;
+            document.getElementById('settings-theme').value = settings.theme;
+            document.getElementById('settings-budget-alerts').checked = settings.budgetAlerts;
+            document.getElementById('settings-bill-reminders').checked = settings.billReminders;
+            document.getElementById('settings-goal-progress').checked = settings.goalProgress;
+            document.getElementById('settings-email-notifications').checked = settings.emailNotifications;
+            document.getElementById('settings-notification-email').value = settings.notificationEmail;
+            document.getElementById('settings-notification-frequency').value = settings.notificationFrequency;
+            document.getElementById('settings-two-factor').checked = settings.twoFactor;
+            
+            // Show/hide email settings
+            const emailSettings = document.getElementById('email-settings');
+            if (settings.emailNotifications) {
+                emailSettings.classList.remove('hidden');
+            } else {
+                emailSettings.classList.add('hidden');
+            }
+        }
+
+        function saveSettings() {
+            const settings = {
+                currency: document.getElementById('settings-currency').value,
+                dateFormat: document.getElementById('settings-date-format').value,
+                theme: document.getElementById('settings-theme').value,
+                budgetAlerts: document.getElementById('settings-budget-alerts').checked,
+                billReminders: document.getElementById('settings-bill-reminders').checked,
+                goalProgress: document.getElementById('settings-goal-progress').checked,
+                emailNotifications: document.getElementById('settings-email-notifications').checked,
+                notificationEmail: document.getElementById('settings-notification-email').value,
+                notificationFrequency: document.getElementById('settings-notification-frequency').value,
+                twoFactor: document.getElementById('settings-two-factor').checked
+            };
+            
+            financialData.updateSettings(settings);
+            showToast('Settings saved successfully!');
+            
+            // Apply theme change
+            initializeTheme();
+        }
+
+        // Form handling and CRUD operations
+        function populateFormOptions() {
+            // Populate categories in forms
+            const categorySelects = document.querySelectorAll('#transaction-category, #budget-category, #transaction-filter-category');
+            categorySelects.forEach(select => {
+                // Clear existing options except the first one (if it's a placeholder)
+                const firstOption = select.firstElementChild;
+                select.innerHTML = '';
+                if (firstOption && (firstOption.value === 'all' || firstOption.value === '')) {
+                    select.appendChild(firstOption);
+                }
+                
+                financialData.categories.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category.id;
+                    option.textContent = category.name;
+                    select.appendChild(option);
+                });
+            });
+            
+            // Populate accounts in forms
+            const accountSelects = document.querySelectorAll('#transaction-account');
+            accountSelects.forEach(select => {
+                select.innerHTML = '';
+                if (financialData.accounts.length === 0) {
+                    const option = document.createElement('option');
+                    option.value = '';
+                    option.textContent = 'No accounts available';
+                    option.disabled = true;
+                    select.appendChild(option);
+                } else {
+                    financialData.accounts.forEach(account => {
+                        const option = document.createElement('option');
+                        option.value = account.id;
+                        option.textContent = `${account.name} (${formatCurrency(account.balance)})`;
+                        select.appendChild(option);
+                    });
+                }
+            });
+        }
+
+        // ENHANCED RECURRING TRANSACTION FUNCTIONALITY
+        
+        // Function to calculate and preview recurring transaction dates
+        function updateDatePreview() {
+            const isRecurring = document.getElementById('transaction-recurring').checked;
+            const frequency = document.getElementById('transaction-frequency').value;
+            const times = parseInt(document.getElementById('transaction-times').value) || 12;
+            const startDate = document.getElementById('transaction-date').value;
+            
+            const previewContainer = document.getElementById('date-preview-container');
+            const previewList = document.getElementById('date-preview-list');
+            
+            if (!isRecurring || !startDate || times <= 0) {
+                previewContainer.classList.add('hidden');
+                return;
+            }
+            
+            previewContainer.classList.remove('hidden');
+            
+            let baseDate = new Date(startDate);
+            const dates = [];
+            
+            // Generate the first 5 dates for preview
+            const previewCount = Math.min(times, 5);
+            for (let i = 0; i < previewCount; i++) {
+                const currentDate = new Date(baseDate);
+                dates.push({
+                    number: i + 1,
+                    date: currentDate.toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'short', 
+                        day: 'numeric' 
+                    })
+                });
+                
+                // Increment date based on frequency
+                switch(frequency) {
+                    case 'daily': 
+                        baseDate.setDate(baseDate.getDate() + 1); 
+                        break;
+                    case 'weekly': 
+                        baseDate.setDate(baseDate.getDate() + 7); 
+                        break;
+                    case 'biweekly': 
+                        baseDate.setDate(baseDate.getDate() + 14); 
+                        break;
+                    case 'monthly': 
+                        baseDate.setMonth(baseDate.getMonth() + 1); 
+                        break;
+                    case 'quarterly': 
+                        baseDate.setMonth(baseDate.getMonth() + 3); 
+                        break;
+                    case 'yearly': 
+                        baseDate.setFullYear(baseDate.getFullYear() + 1); 
+                        break;
+                }
+            }
+            
+            const previewHTML = dates.map(dateInfo => `
+                <div class="date-preview-item">
+                    <span>Transaction #${dateInfo.number}</span>
+                    <span>${dateInfo.date}</span>
+                </div>
+            `).join('');
+            
+            if (times > 5) {
+                previewHTML += `
+                    <div class="date-preview-item" style="border-bottom: none; opacity: 0.7;">
+                        <span>... and ${times - 5} more</span>
+                        <span></span>
+                    </div>
+                `;
+            }
+            
+            previewList.innerHTML = previewHTML;
+        }
+
+        // Function to generate all recurring transactions
+        function generateRecurringTransactions(baseTransaction, frequency, times, startDate) {
+            const transactions = [];
+            let currentDate = new Date(startDate);
+            
+            for (let i = 0; i < times; i++) {
+                const transaction = { ...baseTransaction };
+                transaction.date = currentDate.toISOString().split('T')[0];
+                transaction.id = Date.now() + i; // Ensure unique IDs
+                transactions.push(transaction);
+                
+                // Increment date based on frequency
+                switch(frequency) {
+                    case 'daily': 
+                        currentDate.setDate(currentDate.getDate() + 1); 
+                        break;
+                    case 'weekly': 
+                        currentDate.setDate(currentDate.getDate() + 7); 
+                        break;
+                    case 'biweekly': 
+                        currentDate.setDate(currentDate.getDate() + 14); 
+                        break;
+                    case 'monthly': 
+                        currentDate.setMonth(currentDate.getMonth() + 1); 
+                        break;
+                    case 'quarterly': 
+                        currentDate.setMonth(currentDate.getMonth() + 3); 
+                        break;
+                    case 'yearly': 
+                        currentDate.setFullYear(currentDate.getFullYear() + 1); 
+                        break;
+                }
+            }
+            
+            return transactions;
+        }
+
+        // Modal Functions
+        function openAddTransactionModal() {
+            showModal('add-transaction-modal');
+            // Set default date to today
+            document.getElementById('transaction-date').value = new Date().toISOString().split('T')[0];
+            updateDatePreview(); // Initialize date preview
+        }
+
+        function openAddAccountModal() {
+            showModal('add-account-modal');
+        }
+
+        function openAddBudgetModal() {
+            showModal('add-budget-modal');
+        }
+
+        function openAddGoalModal() {
+            showModal('add-goal-modal');
+        }
+
+        function showModal(modalId) {
+            document.getElementById('modal-backdrop').classList.remove('hidden');
+            document.getElementById(modalId).classList.remove('hidden');
+            
+            // Populate form options when opening modals
+            populateFormOptions();
+            
+            // Focus first input in modal
+            setTimeout(() => {
+                const firstInput = document.querySelector(`#${modalId} input, #${modalId} select`);
+                if (firstInput) firstInput.focus();
+            }, 100);
+        }
+
+        function closeModal(modalId) {
+            document.getElementById('modal-backdrop').classList.add('hidden');
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        function closeAllModals() {
+            document.getElementById('modal-backdrop').classList.add('hidden');
+            const modals = document.querySelectorAll('[id$="-modal"]');
+            modals.forEach(modal => {
+                modal.classList.add('hidden');
+            });
+        }
+
+        // CRUD Functions
+        function deleteTransaction(id) {
+            if (confirm('Are you sure you want to delete this transaction?')) {
+                financialData.deleteTransaction(id);
+                loadAllData();
+                initCharts();
+                showToast('Transaction deleted successfully!');
+            }
+        }
+
+        function deleteAccount(id) {
+            if (confirm('Are you sure you want to delete this account?')) {
+                financialData.deleteAccount(id);
+                loadAllData();
+                showToast('Account deleted successfully!');
+            }
+        }
+
+        function deleteGoal(id) {
+            if (confirm('Are you sure you want to delete this goal?')) {
+                financialData.deleteGoal(id);
+                loadAllData();
+                showToast('Goal deleted successfully!');
+            }
+        }
+
+        // Form event listeners and initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize theme
+            initializeTheme();
+            
+            // Initialize EmailJS
+            initializeEmailJS();
+            
+            // Load all data
+            loadAllData();
+            
+            // Initialize charts
+            setTimeout(initCharts, 100);
+            
+            // Initialize Lucide icons
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+            
+            // Set default active tab
+            setActiveTab('dashboard');
+
+            // Transaction form
+            document.getElementById('transaction-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = {
+                    type: document.getElementById('transaction-type').value,
+                    amount: parseFloat(document.getElementById('transaction-amount').value),
+                    description: document.getElementById('transaction-description').value,
+                    category: parseInt(document.getElementById('transaction-category').value),
+                    account: parseInt(document.getElementById('transaction-account').value),
+                    date: document.getElementById('transaction-date').value
+                };
+
+                // Validate required fields
+                if (!formData.amount || !formData.description || !formData.category || !formData.account || !formData.date) {
+                    showToast('Please fill in all required fields', 'error');
+                    return;
+                }
+                
+                const editId = this.dataset.editId;
+                const isRecurring = document.getElementById('transaction-recurring').checked;
+                const signedAmount = formData.type === 'expense' ? -Math.abs(formData.amount) : Math.abs(formData.amount);
+                
+                if (editId) {
+                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                        // Update existing transaction
+                        formData.amount = formData.type === 'expense' ? -Math.abs(formData.amount) : Math.abs(formData.amount);
+                        financialData.updateTransaction(parseInt(editId), formData);
+                        showToast('Transaction updated successfully!');
+                        delete this.dataset.editId;
+                    } else {
+                        // Handle recurring transactions
+                        const isRecurring = document.getElementById('transaction-recurring').checked;
+                        const signedAmount = formData.type === 'expense' ? -Math.abs(formData.amount) : Math.abs(formData.amount);
+                        
+                        if (isRecurring) {
+                            const frequency = document.getElementById('transaction-frequency').value;
+                            const times = parseInt(document.getElementById('transaction-times').value) || 1;
+                            
+                            // Generate all recurring transactions
+                            const recurringTransactions = generateRecurringTransactions(
+                                { ...formData, amount: signedAmount }, 
+                                frequency, 
+                                times, 
+                                formData.date
+                            );
+                            
+                            // Add all transactions to the data store
+                            recurringTransactions.forEach(transaction => {
+                                financialData.addTransaction(transaction);
+                            });
+                            
+                            showToast(`${times} recurring transactions created successfully!`);
+                        } else {
+                        
+                        
+                        
+                        // Add single transaction
+                            formData.amount = signedAmount;
+                            financialData.addTransaction(formData);
+                            showToast('Transaction added successfully!');
+                        }
+                    }
+                    
+                    loadAllData();
+                    initCharts();
+                    closeModal('add-transaction-modal');
+                    this.reset();
+                    document.getElementById('transaction-date').value = new Date().toISOString().split('T')[0];
+                    
+                    // Reset recurring options
+                    document.getElementById('transaction-recurring').checked = false;
+                    document.getElementById('recurring-options').classList.add('hidden');
+                    document.getElementById('date-preview-container').classList.add('hidden');
+                });
+
+                // Add enhanced recurring toggle handler with smooth animations
+                document.getElementById('transaction-recurring').addEventListener('change', function() {
+                    const recurringOptions = document.getElementById('recurring-options');
+                    
+                    if (this.checked) {
+                        recurringOptions.classList.remove('hidden');
+                        recurringOptions.classList.add('recurring-options-enter');
+                        updateDatePreview(); // Update preview when enabling recurring
+                    } else {
+                        recurringOptions.classList.add('hidden');
+                        recurringOptions.classList.remove('recurring-options-enter');
+                        document.getElementById('date-preview-container').classList.add('hidden');
+                    }
+                });
+
+                // Add event listeners for recurring options to update preview
+                ['transaction-frequency', 'transaction-times', 'transaction-date'].forEach(id => {
+                    document.getElementById(id).addEventListener('change', updateDatePreview);
+                    document.getElementById(id).addEventListener('input', updateDatePreview);
+                });
+                        
+                        
+                        
+                        
+
+                
+                
+                
+
+                // Account form
+                document.getElementById('account-form').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const formData = {
+                        name: document.getElementById('account-name').value,
+                        type: document.getElementById('account-type').value,
+                        balance: parseFloat(document.getElementById('account-balance').value)
+                    };
+
+                    if (!formData.name || !formData.type || isNaN(formData.balance)) {
+                        showToast('Please fill in all required fields', 'error');
+                        return;
+                    }
+
+                    financialData.addAccount(formData);
+                    loadAllData();
+                    showToast('Account added successfully!');
+                    closeModal('add-account-modal');
+                    this.reset();
+                });
+
+                // Budget form
+                document.getElementById('budget-form').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const categoryId = parseInt(document.getElementById('budget-category').value);
+                    const budgetAmount = parseFloat(document.getElementById('budget-amount').value);
+
+                    if (!categoryId || isNaN(budgetAmount)) {
+                        showToast('Please fill in all required fields', 'error');
+                        return;
+                    }
+
+                    // Update category budget
+                    const category = financialData.categories.find(c => c.id === categoryId);
+                    if (category) {
+                        category.budget = budgetAmount;
+                        financialData.saveToStorage('categories', financialData.categories);
+                        loadAllData();
+                        showToast('Budget set successfully!');
+                        closeModal('add-budget-modal');
+                        this.reset();
+                    }
+                });
+
+                // Goal form
+                document.getElementById('goal-form').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const formData = {
+                        name: document.getElementById('goal-name').value,
+                        target: parseFloat(document.getElementById('goal-target').value),
+                        current: parseFloat(document.getElementById('goal-current').value) || 0,
+                        date: document.getElementById('goal-date').value
+                    };
+
+                    if (!formData.name || isNaN(formData.target)) {
+                        showToast('Please fill in all required fields', 'error');
+                        return;
+                    }
+
+                    financialData.addGoal(formData);
+                    loadAllData();
+                    showToast('Goal added successfully!');
+                    closeModal('add-goal-modal');
+                    this.reset();
+                });
+
+                // Email notifications toggle
+                document.getElementById('settings-email-notifications').addEventListener('change', function() {
+                    const emailSettings = document.getElementById('email-settings');
+                    if (this.checked) {
+                        emailSettings.classList.remove('hidden');
+                    } else {
+                        emailSettings.classList.add('hidden');
+                    }
+                });
+
+                // Theme change handler
+                document.getElementById('settings-theme').addEventListener('change', function() {
+                    financialData.updateSettings({ theme: this.value });
+                    initializeTheme();
+                });
+            });
+    </script>
+</body>
+</html>
