@@ -104,6 +104,52 @@
             animation: fadeIn 0.3s ease-in;
         }
         
+       
+       
+        /* Footer Styles - Positioned in Main Content Area */
+        .footer-main-content {
+            position: relative;
+            width: 100%;
+            background-color: transparent;
+        }
+        
+
+        
+        .footer-text-centered {
+            font-size: 10px;
+            color: #666;
+            margin: 30px 0;
+            line-height: 1.4;
+            display: block;
+        }
+        
+        /* Dark mode footer text */
+        .dark .footer-text-centered {
+            color: #9ca3af;
+        }
+        
+        /* Responsive footer */
+        @media (max-width: 1024px) {
+            .footer-main-content {
+                margin-left: 0; /* Remove left margin on mobile */
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .footer-text-centered {
+                font-size: 11px;
+                padding: 0 15px;
+            }
+            
+            .footer-main-content {
+                margin-top: 2rem;
+                padding-top: 1rem;
+            }
+        }
+       
+       
+        
+        
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -130,6 +176,9 @@
         .dark .custom-scrollbar::-webkit-scrollbar-thumb {
             background: #64748b;
         }
+        
+        
+        
         
         /* Chart container */
         .chart-container {
@@ -187,13 +236,80 @@
             background-color: #f59e0b;
             color: white;
         }
+        
+        
 
         /* Notion template styling */
         .notion-template {
-            max-height: 400px;
-            overflow-y: auto;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }
+        
+        .notion-code {
+            background-color: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: #374151;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        
+        .dark .notion-code {
+            background-color: #374151;
+            border-color: #4b5563;
+            color: #f3f4f6;
+        }
+        
+        /* Transaction recurring options animation */
+        .recurring-options-enter {
+            animation: slideIn 0.3s ease-out;
+        }
+        
+   
+   
+   
+   
+           @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Date preview styling */
+        .date-preview {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 12px;
+            font-size: 14px;
+        }
+        
+        .date-preview-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .date-preview-item:last-child {
+            border-bottom: none;
+        }
+   
+   
+   
+   
+        
+        
+        
     </style>
 </head>
 
@@ -216,13 +332,6 @@
 
 
 
-
-
-
-
-
-
-
     <!-- Toast Notification -->
     <div id="toast" class="toast hide bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg">
         <span id="toast-message">Success!</span>
@@ -237,6 +346,8 @@
             <i id="mobile-menu-icon" data-lucide="menu" class="w-6 h-6 text-gray-600 dark:text-gray-300"></i>
         </button>
     </div>
+    
+    
 
     <!-- Theme Toggle Button -->
     <div class="fixed top-4 right-4 z-50">
@@ -244,6 +355,12 @@
             <i id="theme-icon" data-lucide="sun" class="w-6 h-6 text-gray-600 dark:text-gray-300"></i>
         </button>
     </div>
+    
+    
+    
+    
+    
+    
 
     <!-- Desktop Sidebar -->
     <div id="sidebar" class="hidden lg:block fixed left-0 top-0 h-full w-80 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 shadow-lg overflow-y-auto z-10 custom-scrollbar">
@@ -326,6 +443,7 @@
                     </div>
                 </div>
                 
+                
                 <!-- Notion Template Button -->
                 <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
                     <div class="mb-4">
@@ -341,12 +459,8 @@
     </div>
     
     
-    
-    
-    
-    
-    
-    
+
+
 
     <!-- Mobile Sidebar Overlay -->
     <div id="mobile-overlay" class="lg:hidden fixed inset-0 z-40 hidden">
@@ -368,6 +482,9 @@
                         Your Complete Finance Management Hub.
                     </p>
                 </div>
+
+
+
 
                 <!-- Navigation Menu -->
                 <nav class="space-y-2 mb-8">
@@ -607,14 +724,6 @@ Track your financial health, manage budgets, and achieve your financial goals.
                 </div>
             </div>
             
-            
-           <div>
-  <p style="font-size: 12px; text-align: center; margin: 10px 0; color: #666;">
-    <br>Developed with 💖 by Bebell Digital Solutions.<br>
-    Copyright © 2024 • All rights reserved
-  </p>
-</div>
-                 
 
            </div>  
             
@@ -647,6 +756,7 @@ Track your financial health, manage budgets, and achieve your financial goals.
                         </div>
                     </div>
                 </div>
+                
             </div>
             
             
@@ -711,11 +821,7 @@ Track your financial health, manage budgets, and achieve your financial goals.
                     
                     
                     
-                    
-                    
-                    
-                    
-                    
+             
                     
 
                     <!-- Transactions Table -->
@@ -750,6 +856,8 @@ Track your financial health, manage budgets, and achieve your financial goals.
                         </div>
                     </div>
                 </div>
+                
+
             </div>
             
             
@@ -784,7 +892,7 @@ Track your financial health, manage budgets, and achieve your financial goals.
                         </div>
                     </div>
                 </div>
-                
+                         
             </div>
             
             
@@ -864,6 +972,7 @@ Track your financial health, manage budgets, and achieve your financial goals.
                         </div>
                     </div>
                 </div>
+                
             </div>
             
             
@@ -969,7 +1078,9 @@ Track your financial health, manage budgets, and achieve your financial goals.
                         </div>
                     </div>
                 </div>
-            </div>
+                
+                                                  <div>
+   </div>
             
             
             
@@ -1142,6 +1253,8 @@ Track your financial health, manage budgets, and achieve your financial goals.
                                     <input type="checkbox" id="two-factor" class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500">
                                 </div>
                             </div>
+                        
+  
                         </div>
 
 
@@ -1206,12 +1319,7 @@ Track your financial health, manage budgets, and achieve your financial goals.
                 
                 
                 
-                
-                
-                
-                
-                
-                
+  
                 <form id="transaction-form" class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Type</label>
@@ -1249,6 +1357,9 @@ Track your financial health, manage budgets, and achieve your financial goals.
                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
                     </div>
                     
+                    
+                    
+                    
                     <div class="mt-4">
   <div class="flex items-center">
     <input type="checkbox" id="transaction-recurring" class="mr-2">
@@ -1256,15 +1367,22 @@ Track your financial health, manage budgets, and achieve your financial goals.
   </div>
 </div>
 
+
+
 <div id="recurring-options" class="hidden mt-4">
   <div>
     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Frequency</label>
     <select id="transaction-frequency" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
       <option value="daily">Daily</option>
       <option value="weekly">Weekly</option>
-      <option value="monthly">Monthly</option>
+      <option value="monthly" selected>Monthly</option>
       <option value="yearly">Yearly</option>
     </select>
+  </div>
+  <div class="mt-4">
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Number of Occurrences</label>
+    <input type="number" id="transaction-times" min="1" max="100" value="12" 
+           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
   </div>
 </div>
                     
@@ -1313,6 +1431,7 @@ Track your financial health, manage budgets, and achieve your financial goals.
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Account Type</label>
                         <select id="account-type" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" required>
                             <option value="">Select Type</option>
+                             <option value="investment">Cash</option>
                             <option value="checking">Checking</option>
                             <option value="savings">Savings</option>
                             <option value="business">Business</option>
@@ -1452,12 +1571,12 @@ Track your financial health, manage budgets, and achieve your financial goals.
 
 
 
-    <!-- Notion Template Modal -->
+       <!-- Notion Template Modal -->
     <div id="notion-template-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full p-6">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full p-6 max-h-[90vh] overflow-y-auto">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">📋 Notion Financial Template</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">📋 Notion Financial Template - Enhanced DOP Support</h3>
                     <button onclick="closeModal('notion-template-modal')" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                         <i data-lucide="x" class="w-5 h-5"></i>
                     </button>
@@ -1468,42 +1587,90 @@ Track your financial health, manage budgets, and achieve your financial goals.
                         <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mx-auto mb-4">
                             <i data-lucide="file-text" class="w-8 h-8 text-blue-600 dark:text-blue-400"></i>
                         </div>
-                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Personal Finance Template</h2>
-                        <p class="text-gray-600 dark:text-gray-300">Complete Notion template for managing your personal finances</p>
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Enhanced Finance Template with DOP Support</h2>
+                        <p class="text-gray-600 dark:text-gray-300">Complete Notion template with Dominican Peso (DOP) currency support and recurring transaction formulas</p>
                     </div>
 
                     <div class="space-y-6">
                         <div>
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">🎯 What's Included:</h3>
                             <ul class="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300">
-                                <li>Complete database setup for accounts, transactions, and categories</li>
+                                <li>Complete database setup with DOP currency formatting (RD$)</li>
+                                <li>Recurring transaction formulas using dateAdd functions</li>
                                 <li>Budget tracking with visual progress indicators</li>
                                 <li>Monthly and yearly financial reports</li>
                                 <li>Goal tracking and milestone management</li>
                                 <li>Expense categorization system</li>
                                 <li>Income and expense analysis templates</li>
+                                <li>Enhanced formula readability with color coding</li>
                             </ul>
                         </div>
 
                         <div>
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">🚀 Quick Setup Guide:</h3>
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">🚀 Enhanced Features:</h3>
+                            <ul class="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300">
+                                <li>Structured database properties in organized tables</li>
+                                <li>Automatic recurring transaction calculations</li>
+                                <li>Dominican Peso (DOP) currency format throughout</li>
+                                <li>Visual hierarchy with improved markdown</li>
+                                <li>Color coding support for quick identification</li>
+                                <li>Emoji indicators for rapid scanning</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">📋 Database Formulas:</h3>
+                            <div class="notion-code">
+# Budget Remaining Formula
+if(prop("Monthly Budget") > 0, prop("Monthly Budget") - prop("Current Spent"), 0)
+
+# Budget Progress Formula
+if(prop("Monthly Budget") > 0, round(prop("Current Spent") / prop("Monthly Budget") * 100), 0)
+
+# Days Until Target Formula
+dateBetween(prop("Target Date"), now(), "days")
+
+# Monthly Savings Required Formula
+if(prop("Target Date") > now(), (prop("Target Amount") - prop("Current Amount")) / dateBetween(prop("Target Date"), now(), "months"), 0)
+
+# Recurring Transaction Formula
+dateAdd(prop("Last Payment Date"), prop("Frequency"), "months")
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">💰 Currency Configuration:</h3>
+                            <div class="bg-blue-50 dark:bg-blue-900 rounded-lg p-4">
+                                <p class="text-blue-900 dark:text-blue-200 font-medium mb-2">Dominican Peso (DOP) Setup:</p>
+                                <ul class="text-sm text-blue-800 dark:text-blue-300 space-y-1">
+                                    <li>• Currency Symbol: RD$ (Dominican Peso)</li>
+                                    <li>• Format: RD$ #,##0.00</li>
+                                    <li>• All financial properties configured for DOP</li>
+                                    <li>• Automatic calculation formulas included</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">🔄 Recurring Transactions Setup:</h3>
                             <ol class="list-decimal list-inside space-y-2 text-gray-700 dark:text-gray-300">
-                                <li>Click the "Copy Template" button below</li>
-                                <li>Go to your Notion workspace</li>
-                                <li>Delete existing sample data from each database</li>
-                                <li>Add your accounts with initial balances</li>
-                                <li>Set up your expense categories and monthly budgets</li>
-                                <li>Start tracking your transactions</li>
+                                <li>Create a "Frequency" property (select: Monthly, Weekly, Daily, Yearly)</li>
+                                <li>Add "Last Payment Date" property (date format)</li>
+                                <li>Add "Next Due Date" with formula: dateAdd(prop("Last Payment Date"), 1, prop("Frequency"))</li>
+                                <li>Use automation to update dates when transactions are logged</li>
                             </ol>
                         </div>
 
-                        <div class="bg-blue-50 dark:bg-blue-900 rounded-lg p-4">
-                            <h4 class="font-semibold text-blue-900 dark:text-blue-200 mb-2">💡 Pro Tips:</h4>
-                            <ul class="text-sm text-blue-800 dark:text-blue-300 space-y-1">
-                                <li>• Select the correct category for each expense to track budget accurately</li>
-                                <li>• Update your account balances regularly for accurate reporting</li>
-                                <li>• Use the transfer function to move money between accounts</li>
-                                <li>• Set realistic monthly budgets based on your spending history</li>
+                        <div class="bg-green-50 dark:bg-green-900 rounded-lg p-4">
+                            <h4 class="font-semibold text-green-900 dark:text-green-200 mb-2">✨ Key Improvements:</h4>
+                            <ul class="text-sm text-green-800 dark:text-green-300 space-y-1">
+                                <li>• Structured all database properties in organized tables</li>
+                                <li>• Added recurring transaction formula using dateAdd</li>
+                                <li>• Specified DOP currency format throughout</li>
+                                <li>• Enhanced visual hierarchy with markdown</li>
+                                <li>• Improved formula readability</li>
+                                <li>• Added color coding support notes</li>
+                                <li>• Added emoji indicators for quick scanning</li>
                             </ul>
                         </div>
                     </div>
@@ -1511,24 +1678,24 @@ Track your financial health, manage budgets, and achieve your financial goals.
 
                 <div class="flex justify-between items-center">
                     <div class="text-sm text-gray-500 dark:text-gray-400">
-                        <p>Created by Bebell Digital Solutions</p>
-                        <p>Template includes databases, formulas, and automation</p>
+                        <p class="font-medium">Enhanced Template by Bebell Digital Solutions</p>
+                        <p>Includes databases, formulas, DOP currency support, and automation</p>
+                        <p class="text-xs mt-1">Version 2.0 - With Recurring Transactions & Dominican Peso Support</p>
                     </div>
                     <div class="flex space-x-3">
                         <button onclick="copyTemplateText()" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center">
                             <i data-lucide="copy" class="w-4 h-4 mr-2"></i>
-                            Copy Text
+                            Copy Template
                         </button>
                         <a href="https://www.notion.so/templates/personal-finance-tracker" target="_blank" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center">
                             <i data-lucide="external-link" class="w-4 h-4 mr-2"></i>
-                            Copy Template
+                            Visit Notion
                         </a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    
     
     
     
@@ -1594,9 +1761,19 @@ Track your financial health, manage budgets, and achieve your financial goals.
  
  
  
- 
- 
- 
+
+           
+            <!-- Footer Section -->
+            <footer class="footer-main-content mt-16 pt-8 border-t border-gray-200 dark:border-gray-700">
+                <div class="max-w-4xl mx-auto px-4">
+                    <div class="footer-content-center">
+                        <p class="footer-text-centered">
+                            <br>Developed with 💖 by Bebell Digital Solutions.<br>
+                            Copyright © 2024 • All rights reserved
+                        </p>
+                    </div>
+                </div>
+            </footer>
  
  
  
@@ -1609,17 +1786,22 @@ Track your financial health, manage budgets, and achieve your financial goals.
     
 
     <!-- JavaScript -->
-    <script>
+       <script>
         // Enhanced Data Storage with Calendar Integration
-        class FinancialData {
-            constructor() {
-                this.accounts = this.loadFromStorage('accounts', []);
-                this.transactions = this.loadFromStorage('transactions', []);
-                this.categories = this.loadFromStorage('categories', this.getDefaultCategories());
-                this.goals = this.loadFromStorage('goals', []);
-                this.settings = this.loadFromStorage('settings', this.getDefaultSettings());
-                this.bills = this.loadFromStorage('bills', []);
-            }
+class FinancialData {
+    constructor() {
+        this.accounts = this.loadFromStorage('accounts', []);
+        this.transactions = this.loadFromStorage('transactions', []);
+        this.categories = this.loadFromStorage('categories', this.getDefaultCategories());
+        this.goals = this.loadFromStorage('goals', []);
+        this.settings = this.loadFromStorage('settings', this.getDefaultSettings());
+        this.bills = this.loadFromStorage('bills', []);
+    }
+
+            
+            
+            
+            
 
             loadFromStorage(key, defaultValue) {
                 try {
@@ -1668,6 +1850,11 @@ Track your financial health, manage budgets, and achieve your financial goals.
                     twoFactor: false
                 };
             }
+            
+            
+            
+            
+            
 
             // Account operations
             addAccount(account) {
@@ -1676,6 +1863,8 @@ Track your financial health, manage budgets, and achieve your financial goals.
                 this.saveToStorage('accounts', this.accounts);
                 return account;
             }
+            
+            
 
             updateAccount(id, updates) {
                 const index = this.accounts.findIndex(a => a.id === id);
@@ -1692,26 +1881,37 @@ Track your financial health, manage budgets, and achieve your financial goals.
                 this.saveToStorage('accounts', this.accounts);
             }
 
-            // Transaction operations
-            addTransaction(transaction) {
-                transaction.id = Date.now();
-                this.transactions.push(transaction);
-                
-                // Update account balance
-                const account = this.accounts.find(a => a.id === transaction.account);
-                if (account) {
-                    if (transaction.type === 'expense') {
-                        account.balance -= Math.abs(transaction.amount);
-                    } else if (transaction.type === 'income') {
-                        account.balance += Math.abs(transaction.amount);
-                    }
-                    this.saveToStorage('accounts', this.accounts);
-                }
-                
-                this.saveToStorage('transactions', this.transactions);
-                return transaction;
-            }
 
+
+
+
+
+
+
+
+            // Transaction operations
+                addTransaction(transaction) {
+        transaction.id = Date.now();
+        this.transactions.push(transaction);
+        
+        // Update account balance
+        const account = this.accounts.find(a => a.id === transaction.account);
+        if (account) {
+            if (transaction.type === 'expense') {
+                account.balance -= Math.abs(transaction.amount);
+            } else if (transaction.type === 'income') {
+                account.balance += Math.abs(transaction.amount);
+            }
+            this.saveToStorage('accounts', this.accounts);
+        }
+        
+        this.saveToStorage('transactions', this.transactions);
+        return transaction;
+    }
+
+            
+            
+            
             updateTransaction(id, updates) {
                 const index = this.transactions.findIndex(t => t.id === id);
                 if (index !== -1) {
@@ -1744,6 +1944,10 @@ Track your financial health, manage budgets, and achieve your financial goals.
                 this.saveToStorage('transactions', this.transactions);
             }
 
+
+
+
+
             // Category operations
             addCategory(category) {
                 category.id = Date.now();
@@ -1751,6 +1955,11 @@ Track your financial health, manage budgets, and achieve your financial goals.
                 this.saveToStorage('categories', this.categories);
                 return category;
             }
+
+
+
+
+
 
             // Goal operations
             addGoal(goal) {
@@ -1775,11 +1984,21 @@ Track your financial health, manage budgets, and achieve your financial goals.
                 this.saveToStorage('goals', this.goals);
             }
 
+
+
+
+
+
             // Settings operations
             updateSettings(updates) {
                 this.settings = { ...this.settings, ...updates };
                 this.saveToStorage('settings', this.settings);
             }
+            
+            
+            
+            
+            
 
             // Bills operations
             addBill(bill) {
@@ -1788,6 +2007,10 @@ Track your financial health, manage budgets, and achieve your financial goals.
                 this.saveToStorage('bills', this.bills);
                 return bill;
             }
+            
+            
+            
+            
 
             // Clear all data
             clearAllData() {
@@ -1805,12 +2028,23 @@ Track your financial health, manage budgets, and achieve your financial goals.
                 localStorage.removeItem('financialData_bills');
                 localStorage.removeItem('financialData_settings');
             }
+            
+            
+            
+            
+            
+            
 
             // Get transactions for specific date
             getTransactionsForDate(date) {
                 const dateStr = date.toISOString().split('T')[0];
-                return this.transactions.filter(t => t.date === dateStr);
+                return this.transactions.filter(t => t.date === dateStr);   
+                
+                
             }
+            
+            
+            
 
             // Get bills for specific date
             getBillsForDate(date) {
@@ -1818,19 +2052,26 @@ Track your financial health, manage budgets, and achieve your financial goals.
                 return this.bills.filter(b => b.dueDate === dateStr);
             }
         }
+        
+        
+        
+        
+        
 
-        // Global variables
-        let financialData = new FinancialData();
-        let currentSection = 'overview';
-        let isDarkMode = localStorage.getItem('theme') === 'dark' || 
-                        (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
-        let currentMonth = new Date().getMonth();
-        let currentYear = new Date().getFullYear();
-        let charts = {};
-        let emailJS = null;
+  // Global variables
+let financialData = new FinancialData();
+let currentSection = 'overview';
+let isDarkMode = localStorage.getItem('theme') === 'dark' || 
+                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+let currentMonth = new Date().getMonth();
+let currentYear = new Date().getFullYear();
+let charts = {};
+let emailJS = null;
 
-        // Initialize the application
-        function init() {
+// Initialize the application
+function init() {
+
+
             // Set initial theme
             applyTheme();
             
@@ -2009,6 +2250,8 @@ Track your financial health, manage budgets, and achieve your financial goals.
                 });
             });
 
+
+
             // Add bill reminders
             financialData.bills.forEach(bill => {
                 events.push({
@@ -2019,6 +2262,9 @@ Track your financial health, manage budgets, and achieve your financial goals.
                     category: 'Bill'
                 });
             });
+            
+            
+            
 
             // Add goal milestones
             financialData.goals.forEach(goal => {
@@ -2140,53 +2386,160 @@ Track your financial health, manage budgets, and achieve your financial goals.
             alert(details);
         }
 
-        // 4. NOTION TEMPLATE POPUP IMPLEMENTATION
+       // 4. NOTION TEMPLATE POPUP IMPLEMENTATION
         function openNotionTemplateModal() {
             showModal('notion-template-modal');
         }
 
         function copyTemplateText() {
             const templateText = `
-# Personal Finance Template
+# Enhanced Personal Finance Template with DOP Support
 
-## Quick Setup Guide:
-1. Go to the database page and delete all existing data
-2. Select your preferred currency
-3. Add all your accounts with initial balances
-4. Add your categories and assign monthly budgets
-5. Remember to select the category for each expense
+## 🚀 Quick Setup Guide:
+1. Copy this template into a new Notion page
+2. Create the databases following the table structures below
+3. Configure currency to Dominican Peso (DOP) format: RD$ #,##0.00
+4. Set up the formulas as specified
+5. Delete existing sample data from each database
+6. Add your accounts with initial balances
+7. Set up your expense categories and monthly budgets
+8. Start tracking your transactions with recurring options
 
-## Features:
-- Complete database setup for accounts, transactions, and categories
-- Budget tracking with visual progress indicators
-- Monthly and yearly financial reports
-- Goal tracking and milestone management
-- Expense categorization system
-- Income and expense analysis templates
+## 💰 Currency Configuration (Dominican Peso - DOP):
+- Currency Symbol: RD$ (Dominican Peso)
+- Format: RD$ #,##0.00
+- All financial properties configured for DOP
 
-## Databases Included:
-- Accounts Database
-- Transactions Database  
-- Categories Database
-- Goals Database
-- Budget Tracking
-- Reports Dashboard
+## 📊 Database Structures:
 
-## Pro Tips:
-- Select the correct category for each expense to track budget accurately
-- Update your account balances regularly for accurate reporting
-- Use the transfer function to move money between accounts
-- Set realistic monthly budgets based on your spending history
+### 📱 Accounts Database
+| Property | Type | Description |
+|----------|------|-------------|
+| Name | Title | Account name |
+| Type | Select | Checking, Savings, Credit, Investment, Cash |
+| Balance | Number (DOP) | Current balance in RD$ |
+| Institution | Text | Bank or financial institution |
+| Notes | Text | Additional notes |
+
+### 💳 Transactions Database
+| Property | Type | Description |
+|----------|------|-------------|
+| Description | Title | Transaction description |
+| Amount | Number (DOP) | Amount in RD$ |
+| Type | Select | Income, Expense, Transfer |
+| Category | Relation | Link to Categories database |
+| Account | Relation | Link to Accounts database |
+| Date | Date | Transaction date |
+| Recurring | Checkbox | Is this a recurring transaction? |
+| Frequency | Select | Daily, Weekly, Monthly, Yearly |
+| Next Due | Formula | dateAdd(prop("Date"), 1, prop("Frequency")) |
+
+### 📂 Categories Database
+| Property | Type | Description |
+|----------|------|-------------|
+| Name | Title | Category name |
+| Type | Select | Income, Expense |
+| Budget | Number (DOP) | Monthly budget in RD$ |
+| Color | Select | Visual identifier |
+| Current Spent | Rollup | Sum of related transactions |
+| Budget Remaining | Formula | if(prop("Budget") > 0, prop("Budget") - prop("Current Spent"), 0) |
+| Budget Progress | Formula | if(prop("Budget") > 0, round(prop("Current Spent") / prop("Budget") * 100), 0) |
+
+### 🎯 Goals Database
+| Property | Type | Description |
+|----------|------|-------------|
+| Name | Title | Goal name |
+| Target Amount | Number (DOP) | Target amount in RD$ |
+| Current Amount | Number (DOP) | Current saved amount in RD$ |
+| Target Date | Date | Target completion date |
+| Progress | Formula | round(prop("Current Amount") / prop("Target Amount") * 100) |
+| Days Remaining | Formula | dateBetween(prop("Target Date"), now(), "days") |
+| Monthly Required | Formula | if(prop("Target Date") > now(), (prop("Target Amount") - prop("Current Amount")) / dateBetween(prop("Target Date"), now(), "months"), 0) |
+
+## 🔄 Recurring Transaction Formulas:
+
+### Next Due Date:
+\`\`\`
+dateAdd(prop("Last Payment Date"), 1, prop("Frequency"))
+\`\`\`
+
+### Budget Remaining:
+\`\`\`
+if(prop("Monthly Budget") > 0, prop("Monthly Budget") - prop("Current Spent"), 0)
+\`\`\`
+
+### Budget Progress Percentage:
+\`\`\`
+if(prop("Monthly Budget") > 0, round(prop("Current Spent") / prop("Monthly Budget") * 100), 0)
+\`\`\`
+
+### Days Until Target:
+\`\`\`
+dateBetween(prop("Target Date"), now(), "days")
+\`\`\`
+
+### Monthly Savings Required:
+\`\`\`
+if(prop("Target Date") > now(), (prop("Target Amount") - prop("Current Amount")) / dateBetween(prop("Target Date"), now(), "months"), 0)
+\`\`\`
+
+## 🎨 Features Included:
+- ✅ Complete database setup for accounts, transactions, and categories
+- ✅ Dominican Peso (DOP) currency formatting throughout
+- ✅ Budget tracking with visual progress indicators  
+- ✅ Monthly and yearly financial reports
+- ✅ Goal tracking and milestone management
+- ✅ Expense categorization system
+- ✅ Recurring transaction automation
+- ✅ Income and expense analysis templates
+- ✅ Enhanced visual hierarchy with emoji indicators
+- ✅ Color coding support for quick identification
+- ✅ Structured formula organization
+
+## 💡 Pro Tips:
+- 📌 Select the correct category for each expense to track budget accurately
+- 📌 Update your account balances regularly for accurate reporting  
+- 📌 Use the transfer function to move money between accounts
+- 📌 Set realistic monthly budgets based on your spending history
+- 📌 Set up recurring transactions for regular bills and income
+- 📌 Use color coding to quickly identify different types of transactions
+- 📌 Review your goals monthly and adjust targets as needed
+
+## 🔧 Setup Instructions:
+1. Create each database using the structures above
+2. Configure number properties to use DOP currency format (RD$ #,##0.00)
+3. Add the formulas to calculated properties
+4. Set up relations between databases
+5. Create sample categories (Housing, Food, Transportation, etc.)
+6. Add your bank accounts with current balances
+7. Start logging transactions and set up recurring ones
+
+## 🎯 Enhanced Version Features:
+- Structured database properties in organized tables
+- Added recurring transaction formula using dateAdd
+- Specified DOP currency format throughout
+- Enhanced visual hierarchy with markdown
+- Improved formula readability
+- Added color coding support notes  
+- Added emoji indicators for quick scanning
 
 Created by Bebell Digital Solutions
+Template Version 2.0 - Enhanced with DOP Support & Recurring Transactions
             `.trim();
 
             navigator.clipboard.writeText(templateText).then(() => {
-                showToast('Template text copied to clipboard!', 'success');
+                showToast('Enhanced Notion template copied to clipboard!', 'success');
             }).catch(() => {
-                showToast('Failed to copy text', 'error');
+                showToast('Failed to copy template text', 'error');
             });
         }
+        
+        
+      
+        
+        
+        
+        
 
         // 5. EMAIL NOTIFICATIONS IMPLEMENTATION
         function initializeEmailJS() {
@@ -2286,9 +2639,11 @@ Created by Bebell Digital Solutions
                 message: `You've spent ${formatCurrency(spent)} (${percentage}%) of your ${formatCurrency(budget)} budget for ${category}.`
             };
 
-            emailJS.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams)
+            emailJS.send('BebellDigitalSolutions', 'bebell_notifications', templateParams)
                 .catch(error => console.error('Failed to send budget alert:', error));
         }
+        
+        
 
         function showEmailSetupGuide() {
             const guideText = `
@@ -2411,12 +2766,18 @@ After completing setup, return to settings and enter your email address to activ
             
             applyTheme();
             
+            
+            
+            
             // Reinitialize charts with new theme
             setTimeout(() => {
                 initCharts();
             }, 100);
         }
 
+        
+        
+        
         // Navigation Functions
         function showSection(sectionName) {
             // Hide all sections
@@ -2774,59 +3135,72 @@ After completing setup, return to settings and enter your email address to activ
 
             lucide.createIcons();
         }
+        
+        
+        
+        
 
-        function loadTransactions() {
-            const tbody = document.getElementById('transactions-table-body');
-            if (!tbody) return;
+       function loadTransactions() {
+    const tbody = document.getElementById('transactions-table-body');
+    if (!tbody) return;
+    
+    if (financialData.transactions.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="px-6 py-12 text-center">
+                    <div class="text-gray-500 dark:text-gray-400">
+                        <i data-lucide="credit-card" class="w-12 h-12 mx-auto mb-4 opacity-50"></i>
+                        <p class="text-lg mb-2">No transactions yet</p>
+                        <p>Start by adding your first transaction!</p>
+                    </div>
+                </td>
+            </tr>
+        `;
+    } else {
+        const filteredTransactions = getFilteredTransactions();
+        tbody.innerHTML = filteredTransactions.map(transaction => {
+            const account = financialData.accounts.find(a => a.id === transaction.account);
+            const isExpense = transaction.type === 'expense';
+            const amountClass = isExpense ? 'text-danger-600 dark:text-danger-400' : 'text-success-600 dark:text-success-400';
+            const recurringIcon = transaction.recurring ? 
+                `<i data-lucide="repeat" class="w-4 h-4 text-blue-500 dark:text-blue-400 ml-1" title="Recurring transaction"></i>` : '';
             
-            if (financialData.transactions.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6" class="px-6 py-12 text-center">
-                            <div class="text-gray-500 dark:text-gray-400">
-                                <i data-lucide="credit-card" class="w-12 h-12 mx-auto mb-4 opacity-50"></i>
-                                <p class="text-lg mb-2">No transactions yet</p>
-                                <p>Start by adding your first transaction!</p>
+            return `
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">${formatDate(transaction.date)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-gray-100 dark:bg-gray-600 rounded-lg flex items-center justify-center mr-3">
+                                <i data-lucide="${getTransactionIcon(transaction.type)}" class="w-4 h-4 text-gray-600 dark:text-gray-400"></i>
                             </div>
-                        </td>
-                    </tr>
-                `;
-            } else {
-                const filteredTransactions = getFilteredTransactions();
-                tbody.innerHTML = filteredTransactions.map(transaction => {
-                    const account = financialData.accounts.find(a => a.id === transaction.account);
-                    const isExpense = transaction.type === 'expense';
-                    const amountClass = isExpense ? 'text-danger-600 dark:text-danger-400' : 'text-success-600 dark:text-success-400';
-                    
-                    return `
-                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">${formatDate(transaction.date)}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="w-8 h-8 bg-gray-100 dark:bg-gray-600 rounded-lg flex items-center justify-center mr-3">
-                                        <i data-lucide="${getTransactionIcon(transaction.type)}" class="w-4 h-4 text-gray-600 dark:text-gray-400"></i>
-                                    </div>
-                                    <span class="text-sm font-medium text-gray-900 dark:text-white">${transaction.description}</span>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
-                                    ${transaction.category || 'Uncategorized'}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">${account?.name || 'Unknown'}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold ${amountClass}">${formatCurrency(Math.abs(transaction.amount))}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 space-x-2">
-                                <button onclick="editTransaction(${transaction.id})" class="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-300">Edit</button>
-                                <button onclick="deleteTransaction(${transaction.id})" class="text-danger-600 dark:text-danger-400 hover:text-danger-900 dark:hover:text-danger-300">Delete</button>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
-            }
+                            <span class="text-sm font-medium text-gray-900 dark:text-white">
+                                ${transaction.description}
+                                ${recurringIcon}
+                            </span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                            ${transaction.category || 'Uncategorized'}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">${account?.name || 'Unknown'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold ${amountClass}">${formatCurrency(Math.abs(transaction.amount))}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 space-x-2">
+                        <button onclick="editTransaction(${transaction.id})" class="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-300">Edit</button>
+                        <button onclick="deleteTransaction(${transaction.id})" class="text-danger-600 dark:text-danger-400 hover:text-danger-900 dark:hover:text-danger-300">Delete</button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
 
-            lucide.createIcons();
-        }
+    lucide.createIcons();
+}
+
+
+
+
 
         function loadBudgets() {
             const container = document.getElementById('budgets-grid');
@@ -2902,6 +3276,9 @@ After completing setup, return to settings and enter your email address to activ
                 }).join('');
             }
         }
+        
+        
+        
 
         function loadReports() {
             // Reports data will be loaded when charts are initialized
@@ -2918,6 +3295,9 @@ After completing setup, return to settings and enter your email address to activ
                     </div>
                 `;
             }
+
+
+
 
             // Load goal milestones
             const goalMilestones = document.getElementById('goal-milestones');
@@ -2953,6 +3333,10 @@ After completing setup, return to settings and enter your email address to activ
             lucide.createIcons();
         }
 
+
+
+
+
         // Calendar Navigation
         function previousMonth() {
             if (currentMonth === 0) {
@@ -2973,6 +3357,10 @@ After completing setup, return to settings and enter your email address to activ
             }
             loadCalendar();
         }
+        
+        
+        
+        
 
         // Settings Functions
         function showSettingsTab(tabName) {
@@ -2982,11 +3370,19 @@ After completing setup, return to settings and enter your email address to activ
                 content.classList.add('hidden');
             });
 
+
+
+
+
             // Show selected settings content
             const targetContent = document.getElementById(tabName + '-settings');
             if (targetContent) {
                 targetContent.classList.remove('hidden');
             }
+
+
+
+
 
             // Update tab active state
             const settingsTabs = document.querySelectorAll('.settings-tab');
@@ -2994,6 +3390,14 @@ After completing setup, return to settings and enter your email address to activ
                 tab.classList.remove('active', 'border-primary-500', 'text-primary-600', 'dark:text-primary-400');
                 tab.classList.add('border-transparent', 'text-gray-500', 'dark:text-gray-400');
             });
+            
+            
+            
+            
+            
+            
+            
+            
 
             // Add active state to current tab
             const activeTab = document.querySelector(`[onclick="showSettingsTab('${tabName}')"]`);
@@ -3002,6 +3406,9 @@ After completing setup, return to settings and enter your email address to activ
                 activeTab.classList.remove('border-transparent', 'text-gray-500', 'dark:text-gray-400');
             }
         }
+
+
+
 
         function loadSettings() {
             document.getElementById('theme-select').value = financialData.settings.theme;
@@ -3014,6 +3421,14 @@ After completing setup, return to settings and enter your email address to activ
             document.getElementById('notification-email').value = financialData.settings.notificationEmail;
             document.getElementById('notification-frequency').value = financialData.settings.notificationFrequency;
             document.getElementById('two-factor').checked = financialData.settings.twoFactor;
+            
+            
+            
+            
+            
+            
+            
+            
             
             // Show email settings if enabled
             if (financialData.settings.emailNotifications) {
@@ -3039,6 +3454,9 @@ After completing setup, return to settings and enter your email address to activ
             setTimeout(() => initCharts(), 100);
         }
 
+
+
+
         function handleCurrencyChange() {
             const currency = document.getElementById('currency-select').value;
             financialData.updateSettings({ currency });
@@ -3050,6 +3468,10 @@ After completing setup, return to settings and enter your email address to activ
             financialData.updateSettings({ dateFormat });
             loadAllData(); // Refresh all displays
         }
+        
+        
+        
+        
 
         // CRUD Operations
         function editAccount(id) {
@@ -3063,6 +3485,10 @@ After completing setup, return to settings and enter your email address to activ
                 if (account.limit) {
                     document.getElementById('account-limit').value = account.limit;
                 }
+                
+                
+                
+                
                 
                 // Store ID for update
                 document.getElementById('account-form').dataset.editId = id;
@@ -3096,6 +3522,13 @@ After completing setup, return to settings and enter your email address to activ
                 document.getElementById('transaction-account').value = transaction.account;
                 document.getElementById('transaction-date').value = transaction.date;
                 
+                
+                
+                
+                
+                
+                
+                
                 // Store ID for update
                 document.getElementById('transaction-form').dataset.editId = id;
                 
@@ -3118,6 +3551,10 @@ After completing setup, return to settings and enter your email address to activ
                 document.getElementById('budget-amount').value = category.budget;
                 document.getElementById('budget-color').value = category.color;
                 
+                
+                
+                
+                
                 // Store ID for update
                 document.getElementById('budget-form').dataset.editId = id;
                 
@@ -3136,6 +3573,10 @@ After completing setup, return to settings and enter your email address to activ
                 showToast('Budget deleted successfully');
             }
         }
+        
+        
+        
+        
 
         // Filtering
         function getFilteredTransactions() {
@@ -3161,6 +3602,9 @@ After completing setup, return to settings and enter your email address to activ
         function filterTransactions() {
             loadTransactions();
         }
+        
+        
+        
 
         // Chart Functions
         function initCharts() {
@@ -3182,6 +3626,11 @@ After completing setup, return to settings and enter your email address to activ
             const isDark = document.documentElement.classList.contains('dark');
             const textColor = isDark ? '#f9fafb' : '#1f2937';
             const gridColor = isDark ? '#374151' : '#e5e7eb';
+
+
+
+
+
 
             // Calculate last 6 months spending
             const monthlySpending = [];
@@ -3312,7 +3761,12 @@ After completing setup, return to settings and enter your email address to activ
             const textColor = isDark ? '#f9fafb' : '#1f2937';
             const gridColor = isDark ? '#374151' : '#e5e7eb';
 
-            // Calculate last 6 months income and expenses
+           
+           
+           
+           
+           
+           // Calculate last 6 months income and expenses
             const monthlyIncome = [];
             const monthlyExpenses = [];
             const monthLabels = [];
@@ -3407,6 +3861,10 @@ After completing setup, return to settings and enter your email address to activ
 
             const isDark = document.documentElement.classList.contains('dark');
             const textColor = isDark ? '#f9fafb' : '#1f2937';
+
+
+
+
 
 
 
@@ -3565,86 +4023,95 @@ After completing setup, return to settings and enter your email address to activ
 
 
 
-        // Form Handlers
-        function setupFormHandlers() {
-            
-            // Transaction form
-           document.getElementById('transaction-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const formData = {
-        type: document.getElementById('transaction-type').value,
-        amount: parseFloat(document.getElementById('transaction-amount').value),
-        description: document.getElementById('transaction-description').value,
-        category: document.getElementById('transaction-category').value,
-        account: parseInt(document.getElementById('transaction-account').value),
-        date: document.getElementById('transaction-date').value
-    };
-    
-                
-                
-                
-                
-             // Validate required fields
-    if (!formData.amount || !formData.description || !formData.account || !formData.date) {
-        showToast('Please fill in all required fields', 'error');
-        return;
-    }
-    
-    const editId = this.dataset.editId;
-    const isRecurring = document.getElementById('transaction-recurring').checked;
-    const signedAmount = formData.type === 'expense' ? -Math.abs(formData.amount) : Math.abs(formData.amount);
-    
-    if (editId) {
-                
-                
+         // Form Handlers
+function setupFormHandlers() {
+
+
+
+    // Transaction form
+    document.getElementById('transaction-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = {
+            type: document.getElementById('transaction-type').value,
+            amount: parseFloat(document.getElementById('transaction-amount').value),
+            description: document.getElementById('transaction-description').value,
+            category: document.getElementById('transaction-category').value,
+            account: parseInt(document.getElementById('transaction-account').value),
+            date: document.getElementById('transaction-date').value
+        };
+        
+        // Validate required fields
+        if (!formData.amount || !formData.description || !formData.account || !formData.date) {
+            showToast('Please fill in all required fields', 'error');
+            return;
+        }
+        
+        const editId = this.dataset.editId;
+        const isRecurring = document.getElementById('transaction-recurring').checked;
+        const signedAmount = formData.type === 'expense' ? -Math.abs(formData.amount) : Math.abs(formData.amount);
+        
+        if (editId) {
                 
                 
                 
                 
                 
                 
-                                // Update existing transaction
-            formData.amount = formData.type === 'expense' ? -Math.abs(formData.amount) : Math.abs(formData.amount);
+                
+                
+           formData.amount = signedAmount;
             financialData.updateTransaction(parseInt(editId), formData);
             showToast('Transaction updated successfully!');
             delete this.dataset.editId;
-        } else {
+        } else if (isRecurring) {
             // Handle recurring transactions
-            const isRecurring = document.getElementById('transaction-recurring').checked;
-            const signedAmount = formData.type === 'expense' ? -Math.abs(formData.amount) : Math.abs(formData.amount);
+            const frequency = document.getElementById('transaction-frequency').value;
+            let times = parseInt(document.getElementById('transaction-times').value) || 12;
             
-            if (isRecurring) {
-                const frequency = document.getElementById('transaction-frequency').value;
-                const times = parseInt(document.getElementById('transaction-times').value) || 1;
-                let baseDate = new Date(formData.date);
+            
+            
+            
+            
+             // Validate times input
+            if (times < 1) times = 1;
+            if (times > 100) times = 100;
+            
+            let baseDate = new Date(formData.date);
+            let createdCount = 0;
+            
+            for (let i = 0; i < times; i++) {
+                const transaction = { 
+                    ...formData,
+                    date: baseDate.toISOString().split('T')[0],
+                    amount: signedAmount,
+                    recurring: true,
+                    frequency: i > 0 ? frequency : undefined // Only set frequency for future instances
+                };
                 
-                for (let i = 0; i < times; i++) {
-                    const transaction = { ...formData };
-                    transaction.date = baseDate.toISOString().split('T')[0];
-                    transaction.amount = signedAmount;
-                    financialData.addTransaction(transaction);
+                financialData.addTransaction(transaction);
+                createdCount++;
                     
-                    // Increment date based on frequency
-                    switch(frequency) {
-                        case 'daily': baseDate.setDate(baseDate.getDate() + 1); break;
-                        case 'weekly': baseDate.setDate(baseDate.getDate() + 7); break;
-                        case 'biweekly': baseDate.setDate(baseDate.getDate() + 14); break;
-                        case 'monthly': baseDate.setMonth(baseDate.getMonth() + 1); break;
-                        case 'quarterly': baseDate.setMonth(baseDate.getMonth() + 3); break;
-                        case 'yearly': baseDate.setFullYear(baseDate.getFullYear() + 1); break;
-                    }
+                    
+                    
+                    
+           // Increment date based on frequency
+                switch(frequency) {
+                    case 'daily': baseDate.setDate(baseDate.getDate() + 1); break;
+                    case 'weekly': baseDate.setDate(baseDate.getDate() + 7); break;
+                    case 'biweekly': baseDate.setDate(baseDate.getDate() + 14); break;
+                    case 'monthly': baseDate.setMonth(baseDate.getMonth() + 1); break;
+                    case 'quarterly': baseDate.setMonth(baseDate.getMonth() + 3); break;
+                    case 'yearly': baseDate.setFullYear(baseDate.getFullYear() + 1); break;
                 }
-            } else {
-            
-            
-            
-            // Add single transaction
-                formData.amount = signedAmount;
-                financialData.addTransaction(formData);
             }
             
-            showToast('Transaction(s) added successfully!');
+            showToast(`Successfully created ${createdCount} recurring transactions!`, 'success');
+        } else {
+            // Add single transaction
+            formData.amount = signedAmount;
+            financialData.addTransaction(formData);
+            showToast('Transaction added successfully!');
         }
         
         loadAllData();
@@ -3653,15 +4120,39 @@ After completing setup, return to settings and enter your email address to activ
         this.reset();
         document.getElementById('transaction-date').value = new Date().toISOString().split('T')[0];
     });
-
-    // Add recurring toggle handler
+    
+    
+    
+    
+    
+    // Add recurring toggle handler with validation
     document.getElementById('transaction-recurring').addEventListener('change', function() {
-        document.getElementById('recurring-options').classList.toggle('hidden', !this.checked);
+        const recurringOptions = document.getElementById('recurring-options');
+        recurringOptions.classList.toggle('hidden', !this.checked);
+        
+        if (this.checked) {
+            // Initialize default values
+            document.getElementById('transaction-frequency').value = 'monthly';
+            document.getElementById('transaction-times').value = '12';
+        }
     });
+
                 
-                
-                
-                
+
+
+    // Validate times input
+    document.getElementById('transaction-times').addEventListener('input', function() {
+        if (this.value < 1) this.value = 1;
+        if (this.value > 100) this.value = 100;
+    });
+
+
+
+
+
+
+
+
 
             
             
@@ -3869,9 +4360,14 @@ After completing setup, return to settings and enter your email address to activ
                 }
             });
         }
+        
+        
 
         // Initialize the application when the page loads
         document.addEventListener('DOMContentLoaded', init);
+        
+        
+        
 
         // Handle system theme changes
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
@@ -3897,5 +4393,6 @@ After completing setup, return to settings and enter your email address to activ
             }
         }, 24 * 60 * 60 * 1000); // Check once per day
     </script>
+
 </body>
 </html>
